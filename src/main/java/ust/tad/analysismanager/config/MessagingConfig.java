@@ -1,7 +1,6 @@
 package ust.tad.analysismanager.config;
 
 import org.springframework.amqp.core.HeadersExchange;
-import org.springframework.amqp.core.TopicExchange;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
