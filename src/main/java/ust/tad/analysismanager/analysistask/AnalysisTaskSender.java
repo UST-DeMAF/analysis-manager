@@ -27,8 +27,8 @@ public class AnalysisTaskSender {
 
         Message message = MessageBuilder.withBody(objectMapper.writeValueAsString(analysisTask).getBytes())
             .setContentType(MessageProperties.CONTENT_TYPE_JSON)
-            .setHeader("technology", analysisTask.getTechnology().getName().toString())
-            .setHeader("analysisType", analysisTask.getAnalysisType().toString())
+            //.setHeader("technology", analysisTask.getTechnology())
+            //.setHeader("analysisType", analysisTask.getAnalysisType().toString())
             .build();
             
         template.convertAndSend(headers.getName(), "", message);

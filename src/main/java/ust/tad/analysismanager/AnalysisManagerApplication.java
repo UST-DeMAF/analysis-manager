@@ -11,7 +11,7 @@ public class AnalysisManagerApplication {
 	public static void main(String[] args) {
 		SpringApplication app = new SpringApplication(AnalysisManagerApplication.class);
 		app.setBannerMode(Mode.OFF);
-		app.setWebApplicationType(WebApplicationType.NONE);
+		//app.setWebApplicationType(WebApplicationType.NONE);
 		app.run(args);
 	}
 
