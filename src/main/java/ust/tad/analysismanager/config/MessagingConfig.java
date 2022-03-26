@@ -7,10 +7,14 @@ import org.springframework.amqp.core.HeadersExchange;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
+import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import ust.tad.analysismanager.analysistaskresponse.AnalysisTaskResponseReceiver;
 
 @Configuration
 public class MessagingConfig {
@@ -36,6 +40,11 @@ public class MessagingConfig {
     }
 
     @Bean
+    public MessageConverter jsonMessageConverter() {
+        return new Jackson2JsonMessageConverter();
+    }
+
+    @Bean
     public HeadersExchange analysisTaskRequestExchange() {
         return new HeadersExchange(analysisTaskRequestExchangeName, true, false);
     } 
@@ -52,13 +61,18 @@ public class MessagingConfig {
 
     /**
      * Create a Binding between the analysisTaskResponseExchange and the analysisTaskResponseQueue
-     * with the routing key being the name of the analysisTaskResponseQueue
+     * with the routing key being an empty String
      */
     @Bean
     public Binding analysisTaskResponseQueueBinding(DirectExchange analysisTaskResponseExchange, Queue analysisTaskResponseQueue) {
         return BindingBuilder.bind(analysisTaskResponseQueue)
             .to(analysisTaskResponseExchange)
-            .with(analysisTaskResponseQueueName);
+            .with("");
+    }
+
+    @Bean
+    public AnalysisTaskResponseReceiver analysisTaskResponseReceiver() {
+        return new AnalysisTaskResponseReceiver();
     }
 
 }
