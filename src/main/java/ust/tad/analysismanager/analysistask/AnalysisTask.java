@@ -11,10 +11,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import ust.tad.analysismanager.shared.AnalysisType;
 
 @Entity
+@Table(name="AnalysisTask")
 public class AnalysisTask {
 
     @Id
@@ -35,11 +37,10 @@ public class AnalysisTask {
     private String pluginQueueName;
     
     @OneToMany
-    //@JoinColumn(name = "location_id", referencedColumnName = "id")
     private List<Location> locations;
 
     @OneToMany
-    @JoinColumn(name = "task_id", referencedColumnName = "taskId")
+    @JoinColumn(name = "parentTaskId", referencedColumnName = "taskId")
     private List<AnalysisTask> subTasks;
 
 

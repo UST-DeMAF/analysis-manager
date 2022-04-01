@@ -39,6 +39,9 @@ public class MessagingConfig {
         return new RabbitAdmin(connectionFactory);
     }
 
+    /**
+     * Required to automatically transform messages with JSON body to Java objects.
+     */
     @Bean
     public MessageConverter jsonMessageConverter() {
         return new Jackson2JsonMessageConverter();

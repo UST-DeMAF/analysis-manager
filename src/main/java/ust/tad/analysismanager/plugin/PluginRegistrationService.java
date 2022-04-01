@@ -62,11 +62,9 @@ public class PluginRegistrationService {
 
 
     private String createRequestQueueName(PluginRegistrationRequest pluginRegistrationRequest) {
-        String requestQueueName = String.format("%s%s", 
+        return String.format("%s%s", 
             pluginRegistrationRequest.getTechnology(), 
             pluginRegistrationRequest.getAnalysisType().toString());
-        //todo look up if name is already taken
-        return requestQueueName;
     }
 
 }

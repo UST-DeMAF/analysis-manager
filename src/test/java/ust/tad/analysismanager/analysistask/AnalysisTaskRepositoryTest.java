@@ -20,7 +20,6 @@ import ust.tad.analysismanager.shared.AnalysisType;
 })
 @EnableTransactionManagement
 public class AnalysisTaskRepositoryTest {
-
     
     @Autowired
     LocationRepository locationRepository;
