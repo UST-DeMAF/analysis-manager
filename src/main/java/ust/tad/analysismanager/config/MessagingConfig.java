@@ -70,7 +70,7 @@ public class MessagingConfig {
     public Binding analysisTaskResponseQueueBinding(DirectExchange analysisTaskResponseExchange, Queue analysisTaskResponseQueue) {
         return BindingBuilder.bind(analysisTaskResponseQueue)
             .to(analysisTaskResponseExchange)
-            .withQueueName();
+            .with("");
     }
 
     @Bean
