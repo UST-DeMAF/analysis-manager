@@ -14,12 +14,31 @@ public class PluginService {
     @Autowired
     PluginRepository pluginRepository;
 
+    /**
+     * Find all registered Plugins.
+     * 
+     * @return a List of all Plugins.
+     */
     public List<Plugin> getAllPlugins() {
         return pluginRepository.findAll();
     }
 
-    public String getQueueNameForPlugin(String technology, AnalysisType analysisType) {
-        return pluginRepository.findByTechnologyAndAnalysisType(technology, analysisType).get(0).getQueueName();        
+    /**
+     * Finds a Plugin, identified by the technology and analysisType.
+     * 
+     * @param technology
+     * @param analysisType
+     * @return the Plugin.
+     * @throws PluginException if no appropriate plugin can be found.
+     */
+    public Plugin getPluginByTechnologyAndAnalysisType(String technology, AnalysisType analysisType) throws PluginException {
+        try {
+            return pluginRepository.findByTechnologyAndAnalysisType(technology, analysisType).get(0);  
+        } catch (IndexOutOfBoundsException e) {
+            throw new PluginException(
+                String.format("No appropriate plugin currently registered for technology: '%s' and anlalysisType: '%s'.", 
+                technology, analysisType.toString()));
+        }    
     }
     
 }

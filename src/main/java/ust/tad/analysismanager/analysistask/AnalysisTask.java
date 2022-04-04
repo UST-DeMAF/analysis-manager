@@ -34,7 +34,7 @@ public class AnalysisTask {
 
     private AnalysisStatus status = AnalysisStatus.RUNNING;
 
-    private String pluginQueueName;
+    private UUID pluginId;
     
     @OneToMany
     private List<Location> locations;
@@ -47,13 +47,13 @@ public class AnalysisTask {
     public AnalysisTask() {
     }
 
-    public AnalysisTask(UUID transformationProcessId, String technology, AnalysisType analysisType, List<String> commands, AnalysisStatus status, String pluginQueueName, List<Location> locations, List<AnalysisTask> subTasks) {
+    public AnalysisTask(UUID transformationProcessId, String technology, AnalysisType analysisType, List<String> commands, AnalysisStatus status, UUID pluginId, List<Location> locations, List<AnalysisTask> subTasks) {
         this.transformationProcessId = transformationProcessId;
         this.technology = technology;
         this.analysisType = analysisType;
         this.commands = commands;
         this.status = status;
-        this.pluginQueueName = pluginQueueName;
+        this.pluginId = pluginId;
         this.locations = locations;
         this.subTasks = subTasks;
     }
@@ -102,12 +102,12 @@ public class AnalysisTask {
         this.status = status;
     }
 
-    public String getPluginQueueName() {
-        return this.pluginQueueName;
+    public UUID getPluginId() {
+        return this.pluginId;
     }
 
-    public void setPluginQueueName(String pluginQueueName) {
-        this.pluginQueueName = pluginQueueName;
+    public void setPluginId(UUID pluginId) {
+        this.pluginId = pluginId;
     }
 
     public List<Location> getLocations() {
@@ -151,8 +151,8 @@ public class AnalysisTask {
         return this;
     }
 
-    public AnalysisTask pluginQueueName(String pluginQueueName) {
-        setPluginQueueName(pluginQueueName);
+    public AnalysisTask pluginId(UUID pluginId) {
+        setPluginId(pluginId);
         return this;
     }
 
@@ -174,12 +174,12 @@ public class AnalysisTask {
             return false;
         }
         AnalysisTask analysisTask = (AnalysisTask) o;
-        return Objects.equals(taskId, analysisTask.taskId) && Objects.equals(transformationProcessId, analysisTask.transformationProcessId) && Objects.equals(technology, analysisTask.technology) && Objects.equals(analysisType, analysisTask.analysisType) && Objects.equals(commands, analysisTask.commands) && Objects.equals(status, analysisTask.status) && Objects.equals(pluginQueueName, analysisTask.pluginQueueName) && Objects.equals(locations, analysisTask.locations) && Objects.equals(subTasks, analysisTask.subTasks);
+        return Objects.equals(taskId, analysisTask.taskId) && Objects.equals(transformationProcessId, analysisTask.transformationProcessId) && Objects.equals(technology, analysisTask.technology) && Objects.equals(analysisType, analysisTask.analysisType) && Objects.equals(commands, analysisTask.commands) && Objects.equals(status, analysisTask.status) && Objects.equals(pluginId, analysisTask.pluginId) && Objects.equals(locations, analysisTask.locations) && Objects.equals(subTasks, analysisTask.subTasks);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(taskId, transformationProcessId, technology, analysisType, commands, status, pluginQueueName, locations, subTasks);
+        return Objects.hash(taskId, transformationProcessId, technology, analysisType, commands, status, pluginId, locations, subTasks);
     }
 
     @Override
@@ -191,7 +191,7 @@ public class AnalysisTask {
             ", analysisType='" + getAnalysisType() + "'" +
             ", commands='" + getCommands() + "'" +
             ", status='" + getStatus() + "'" +
-            ", pluginQueueName='" + getPluginQueueName() + "'" +
+            ", pluginQueueName='" + getPluginId() + "'" +
             ", locations='" + getLocations() + "'" +
             ", subTasks='" + getSubTasks() + "'" +
             "}";

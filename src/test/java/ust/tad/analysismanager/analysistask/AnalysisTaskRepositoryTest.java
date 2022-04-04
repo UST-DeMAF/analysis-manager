@@ -39,7 +39,7 @@ public class AnalysisTaskRepositoryTest {
         analysisTask.setTechnology("Kubernetes");
         analysisTask.setAnalysisType(AnalysisType.STATIC);
         analysisTask.setCommands(List.of("command1", "command2"));
-        analysisTask.setPluginQueueName("kubernetesStaticQueue");
+        analysisTask.setPluginId(UUID.randomUUID());
         analysisTask.setLocations(List.of(location1, location2));
 
         analysisTask = analysisTaskRepository.save(analysisTask);

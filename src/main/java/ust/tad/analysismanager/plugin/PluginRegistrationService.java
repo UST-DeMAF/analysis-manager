@@ -29,9 +29,49 @@ public class PluginRegistrationService {
     @Value("${messaging.analysistask.response.exchange.name}")
     private String responseExchangeName;
 
+    /**
+     * Registers a new Plugin.
+     * Creates a queue for the new plugin and persists information about the plugin 
+     * in the configurations database
+     * Then, a PluginRegistrationResponse is created and returned. 
+     * 
+     * @param pluginRegistrationRequest
+     * @return
+     */
     public PluginRegistrationResponse registerPlugin(PluginRegistrationRequest pluginRegistrationRequest){
         String requestQueueName = createRequestQueueName(pluginRegistrationRequest);
+        createRequestQueue(requestQueueName, pluginRegistrationRequest);        
 
+        Plugin plugin = new Plugin();
+        plugin.setTechnology(pluginRegistrationRequest.getTechnology());
+        plugin.setAnalysisType(pluginRegistrationRequest.getAnalysisType());
+        plugin.setQueueName(requestQueueName);
+        pluginRepository.save(plugin);
+
+        PluginRegistrationResponse pluginRegistrationResponse = new PluginRegistrationResponse();
+        pluginRegistrationResponse.setRequestQueueName(requestQueueName);
+        pluginRegistrationResponse.setResponseExchangeName(responseExchangeName);
+
+        return pluginRegistrationResponse;    
+    }
+
+
+    private String createRequestQueueName(PluginRegistrationRequest pluginRegistrationRequest) {
+        return String.format("%s%s", 
+            pluginRegistrationRequest.getTechnology(), 
+            pluginRegistrationRequest.getAnalysisType().toString());
+    }
+
+    /**
+     * Creates a request queue for the plugin with a binding to the analysisTaskRequestExchange.
+     * The binding uses a routing key that is based on the technology and analysisType of the plugin.
+     * Through registering the queue and the binding at the rabbitAdmin, both entities are created 
+     * at the message broker.
+     * 
+     * @param requestQueueName
+     * @param pluginRegistrationRequest
+     */
+    private void createRequestQueue(String requestQueueName, PluginRegistrationRequest pluginRegistrationRequest) {
         Queue requestQueue = new Queue(requestQueueName, true, false, false);
 
         Map<String, Object> routingKeys = Map.of(
@@ -44,27 +84,6 @@ public class PluginRegistrationService {
         
         rabbitAdmin.declareQueue(requestQueue);
         rabbitAdmin.declareBinding(requestBinding);
-
-        Plugin plugin = new Plugin();
-        plugin.setTechnology(pluginRegistrationRequest.getTechnology());
-        plugin.setAnalysisType(pluginRegistrationRequest.getAnalysisType());
-        plugin.setQueueName(requestQueueName);
-
-        pluginRepository.save(plugin);
-
-        PluginRegistrationResponse pluginRegistrationResponse = new PluginRegistrationResponse();
-        pluginRegistrationResponse.setRequestQueueName(requestQueueName);
-        pluginRegistrationResponse.setResponseQueueName(responseQueueName);
-        pluginRegistrationResponse.setResponseExchangeName(responseExchangeName);
-
-        return pluginRegistrationResponse;    
-    }
-
-
-    private String createRequestQueueName(PluginRegistrationRequest pluginRegistrationRequest) {
-        return String.format("%s%s", 
-            pluginRegistrationRequest.getTechnology(), 
-            pluginRegistrationRequest.getAnalysisType().toString());
     }
 
 }

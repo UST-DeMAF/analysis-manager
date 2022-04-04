@@ -25,7 +25,7 @@ public class AnalysisTaskService {
         AnalysisType analysisType, 
         URL url, 
         List<String> commands, 
-        String pluginQueueName) {
+        UUID pluginId) {
 
         Location location = locationService.createLocation(url);
 
@@ -34,7 +34,7 @@ public class AnalysisTaskService {
         newAnalysisTask.setTechnology(technology);
         newAnalysisTask.setAnalysisType(analysisType);
         newAnalysisTask.setCommands(commands);
-        newAnalysisTask.setPluginQueueName(pluginQueueName);        
+        newAnalysisTask.setPluginId(pluginId);        
         newAnalysisTask.setLocations(List.of(location));
         return analysisTaskRepository.save(newAnalysisTask);        
     }
