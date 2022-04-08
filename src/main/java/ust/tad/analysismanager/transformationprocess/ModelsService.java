@@ -45,7 +45,7 @@ public class ModelsService {
         initializeTechnologySpecificDeploymentModelRequest.setLocations(List.of(location));
 
         return modelsServiceApiClient.post()
-            .uri("/technology-specific")
+            .uri("/technology-specific/init")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
             .body(BodyInserters.fromValue(initializeTechnologySpecificDeploymentModelRequest))
@@ -64,7 +64,7 @@ public class ModelsService {
     public String initializeTechnologyAgnosticDeploymentModel(UUID transformationProcessId) {
         return modelsServiceApiClient.post()
             .uri(uriBuilder -> uriBuilder
-                .path("/technology-agnostic")
+                .path("/technology-agnostic/init")
                 .queryParam("transformationProcessId", transformationProcessId)
                 .build())
             .contentType(MediaType.APPLICATION_JSON)
