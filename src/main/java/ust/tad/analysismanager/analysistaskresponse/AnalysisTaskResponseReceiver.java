@@ -50,7 +50,7 @@ public class AnalysisTaskResponseReceiver {
       EmbeddedDeploymentModelAnalysisRequest embeddedDeploymentModelAnalysisRequest = mapper.convertValue(
           jsonMessageConverter.fromMessage(message), 
           EmbeddedDeploymentModelAnalysisRequest.class);
-      LOG.info("received AnalysisTaskResponse: " + embeddedDeploymentModelAnalysisRequest.toString());
+      LOG.info("received EmbeddedDeploymentModelAnalysisRequest: " + embeddedDeploymentModelAnalysisRequest.toString());
     }
     
 }
