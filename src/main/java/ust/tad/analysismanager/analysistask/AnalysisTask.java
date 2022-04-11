@@ -1,11 +1,13 @@
 package ust.tad.analysismanager.analysistask;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -30,18 +32,18 @@ public class AnalysisTask {
     private AnalysisType analysisType;
 
     @ElementCollection
-    private List<String> commands;
+    private List<String> commands = new ArrayList<>();
 
     private AnalysisStatus status = AnalysisStatus.RUNNING;
 
     private UUID pluginId;
     
     @OneToMany
-    private List<Location> locations;
+    private List<Location> locations = new ArrayList<>();
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "parentTaskId", referencedColumnName = "taskId")
-    private List<AnalysisTask> subTasks;
+    private List<AnalysisTask> subTasks = new ArrayList<>();
 
 
     public AnalysisTask() {
@@ -195,6 +197,10 @@ public class AnalysisTask {
             ", locations='" + getLocations() + "'" +
             ", subTasks='" + getSubTasks() + "'" +
             "}";
+    }
+
+    public void addSubtask(AnalysisTask subTask) {
+        this.subTasks.add(subTask);
     }
 
 }

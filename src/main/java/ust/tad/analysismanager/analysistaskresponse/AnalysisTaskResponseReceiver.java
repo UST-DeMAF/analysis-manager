@@ -9,10 +9,15 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import ust.tad.analysismanager.transformationprocess.TransformationProcessService;
+
 public class AnalysisTaskResponseReceiver {
   
     @Autowired
     private MessageConverter jsonMessageConverter;
+
+    @Autowired
+    private TransformationProcessService transformationProcessService;
 
     private static final Logger LOG =
       LoggerFactory.getLogger(AnalysisTaskResponseReceiver.class);
@@ -42,6 +47,7 @@ public class AnalysisTaskResponseReceiver {
           jsonMessageConverter.fromMessage(message), 
           AnalysisTaskResponse.class);
       LOG.info("received AnalysisTaskResponse: " + analysisTaskResponse.toString());
+      transformationProcessService.handleAnalysisTaskResponse(analysisTaskResponse);      
     }
 
     private void receiveEmbeddedDeploymentModelAnalysisRequest(Message message) {
@@ -51,6 +57,7 @@ public class AnalysisTaskResponseReceiver {
           jsonMessageConverter.fromMessage(message), 
           EmbeddedDeploymentModelAnalysisRequest.class);
       LOG.info("received EmbeddedDeploymentModelAnalysisRequest: " + embeddedDeploymentModelAnalysisRequest.toString());
+      transformationProcessService.handleEmbeddedDeploymentModelAnalysisRequest(embeddedDeploymentModelAnalysisRequest);
     }
-    
+
 }

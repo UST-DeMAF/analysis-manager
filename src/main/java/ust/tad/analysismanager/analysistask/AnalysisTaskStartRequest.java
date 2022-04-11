@@ -1,5 +1,6 @@
 package ust.tad.analysismanager.analysistask;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -10,9 +11,9 @@ public class AnalysisTaskStartRequest {
 
     private UUID transformationProcessId;
 
-    private List<String> commands;
+    private List<String> commands = new ArrayList<>();
 
-    private List<Location> locations;
+    private List<Location> locations = new ArrayList<>();
 
 
     public AnalysisTaskStartRequest() {

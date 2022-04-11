@@ -1,12 +1,15 @@
 package ust.tad.analysismanager.analysistask;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import ust.tad.analysismanager.analysistaskresponse.AnalysisTaskResponse;
+import ust.tad.analysismanager.analysistaskresponse.EmbeddedDeploymentModelAnalysisRequest;
 import ust.tad.analysismanager.shared.AnalysisType;
 
 @Service
@@ -28,6 +31,8 @@ public class AnalysisTaskService {
         UUID pluginId) {
 
         Location location = locationService.createLocation(url);
+        List<Location> locations = new ArrayList<>();
+        locations.add(location);
 
         AnalysisTask newAnalysisTask = new AnalysisTask();
         newAnalysisTask.setTransformationProcessId(transformationProcessId);
@@ -35,8 +40,83 @@ public class AnalysisTaskService {
         newAnalysisTask.setAnalysisType(analysisType);
         newAnalysisTask.setCommands(commands);
         newAnalysisTask.setPluginId(pluginId);        
-        newAnalysisTask.setLocations(List.of(location));
+        newAnalysisTask.setLocations(locations);
         return analysisTaskRepository.save(newAnalysisTask);        
     }
+
+    public AnalysisTask createAnalysisTaskFromEmbeddedDeploymentModelAnalysisRequest(EmbeddedDeploymentModelAnalysisRequest request) {
+        List<Location> savedLocations = locationService.saveLocations(request.getLocations());
+
+        AnalysisTask analysisTask = new AnalysisTask();
+        analysisTask.setTransformationProcessId(request.getTransformationProcessId());
+        analysisTask.setTechnology(request.getTechnology());
+        analysisTask.setCommands(request.getCommands());
+        analysisTask.setLocations(savedLocations);
+        analysisTask.setStatus(AnalysisStatus.WAITING);
+        AnalysisTask newTask = analysisTaskRepository.save(analysisTask);
+
+        addSubtask(request.getParentTaskId(), newTask);
+        return newTask;
+    }
+
+    public AnalysisTask createDynamicTaskFromStaticTask(AnalysisTask staticTask, UUID pluginId) {
+        List<Location> locations = locationService.duplicateLocations(staticTask.getLocations());
+
+        AnalysisTask newAnalysisTask = new AnalysisTask();
+        newAnalysisTask.setTransformationProcessId(staticTask.getTransformationProcessId());
+        newAnalysisTask.setTechnology(staticTask.getTechnology());
+        newAnalysisTask.setAnalysisType(AnalysisType.DYNAMIC);
+        newAnalysisTask.setCommands(staticTask.getCommands());
+        newAnalysisTask.setPluginId(pluginId);        
+        newAnalysisTask.setLocations(locations);
+        return analysisTaskRepository.save(newAnalysisTask);    
+    }
+
+    public AnalysisTask addSubtask(UUID parentTaskId, AnalysisTask subTask) {
+        AnalysisTask parentTask = analysisTaskRepository.getByTaskId(parentTaskId);
+        parentTask.addSubtask(subTask);
+        return analysisTaskRepository.save(parentTask);        
+    }
+
+    public AnalysisTask updateStatusFromAnalysisTaskResponse(AnalysisTaskResponse response) {
+        AnalysisTask task = analysisTaskRepository.getByTaskId(response.getTaskId());
+        if(response.getSuccess()) {
+            task.setStatus(AnalysisStatus.FINISHED);
+        } else {
+            task.setStatus(AnalysisStatus.FAILED);            
+        }
+        return analysisTaskRepository.save(task);
+    }
+
+    public AnalysisTask updateStatusToFailed(AnalysisTask analysisTask) {
+        analysisTask.setStatus(AnalysisStatus.FAILED);
+        return analysisTaskRepository.save(analysisTask);
+    }
+
+    public AnalysisTask updateStatusToRunning(AnalysisTask analysisTask, UUID pluginId, AnalysisType analysisType) {
+        analysisTask.setAnalysisType(analysisType);
+        analysisTask.setPluginId(pluginId);
+        analysisTask.setStatus(AnalysisStatus.RUNNING);
+        return analysisTaskRepository.save(analysisTask);
+    }
+
+    public AnalysisTask getTaskByTaskId(UUID taskId) {
+        return analysisTaskRepository.getByTaskId(taskId);
+    }
+
+    public AnalysisTask getOneWaitingAnalysisTask() {
+        return analysisTaskRepository.getByStatus(AnalysisStatus.WAITING).get(0);
+    }
+
+    public Boolean isTransformationCompleted() {
+        List<AnalysisTask> runningTasks = analysisTaskRepository.getByStatus(AnalysisStatus.RUNNING);
+        List<AnalysisTask> waitingTasks = analysisTaskRepository.getByStatus(AnalysisStatus.WAITING);
+        return runningTasks.isEmpty() && waitingTasks.isEmpty();
+    }
+
+    public Boolean areTasksWaiting() {
+        return !analysisTaskRepository.getByStatus(AnalysisStatus.WAITING).isEmpty();
+    }
+
 
 }

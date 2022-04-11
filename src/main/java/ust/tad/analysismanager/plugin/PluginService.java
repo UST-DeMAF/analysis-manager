@@ -37,7 +37,7 @@ public class PluginService {
             return pluginRepository.findByTechnologyAndAnalysisType(technology, analysisType).get(0);  
         } catch (IndexOutOfBoundsException e) {
             throw new PluginException(
-                String.format("No appropriate plugin currently registered for technology: '%s' and anlalysisType: '%s'.", 
+                String.format("No appropriate plugin currently registered for technology: '%s' and analysisType: '%s'.", 
                 technology, analysisType.toString()));
         }    
     }
