@@ -49,18 +49,17 @@ public class TransformationProcessService {
      * @return the response to the user as a String.
      */
     public String startTransformationProcess(String technology, URL locationURL, List<String> commands) {
-        UUID transformationProcessId = UUID.randomUUID();        
-        AnalysisType analysisType = AnalysisType.STATIC;
+        UUID transformationProcessId = UUID.randomUUID();
 
         Plugin plugin;
         try {
-            plugin = pluginService.getPluginByTechnologyAndAnalysisType(technology, analysisType);
-        } catch (PluginException pluginException) {
+            plugin = pluginService.getPluginByTechnology(technology);
+        } catch (PluginException pluginException) { 
             pluginException.printStackTrace();
             return String.format("Could not start transformation process because an error occured: %s", pluginException.getMessage());
         }
         AnalysisTask analysisTask = analysisTaskService.createAnalysisTask(
-            transformationProcessId, technology, analysisType, locationURL, commands, plugin.getId());
+            transformationProcessId, technology, plugin.getAnalysisType(), locationURL, commands, plugin.getId());
 
         Location location = new Location();
         location.setUrl(locationURL);
