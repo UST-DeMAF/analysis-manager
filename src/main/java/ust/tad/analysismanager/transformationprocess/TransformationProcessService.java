@@ -167,7 +167,8 @@ public class TransformationProcessService {
      */
     private void finishTransformationProcess(UUID transformationProcessId) {
         Result result = modelsService.getResult(transformationProcessId);
-
+        
+        terminal.writer().println();
         terminal.writer().println("Transformation process finished!");
         terminal.writer().println("Find the technology-agnostic deployment model under the following path:");
         terminal.writer().println(result.getPath());

@@ -2,7 +2,7 @@ package ust.tad.analysismanager.config;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.DirectExchange;
+import org.springframework.amqp.core.FanoutExchange;
 import org.springframework.amqp.core.HeadersExchange;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -53,8 +53,8 @@ public class MessagingConfig {
     } 
 
     @Bean
-    public DirectExchange analysisTaskResponseExchange() {
-        return new DirectExchange(analysisTaskResponseExchangeName, true, false);
+    public FanoutExchange analysisTaskResponseExchange() {
+        return new FanoutExchange(analysisTaskResponseExchangeName, true, false);
     }     
 
     @Bean
@@ -67,10 +67,9 @@ public class MessagingConfig {
      * with the routing key being an empty String
      */
     @Bean
-    public Binding analysisTaskResponseQueueBinding(DirectExchange analysisTaskResponseExchange, Queue analysisTaskResponseQueue) {
+    public Binding analysisTaskResponseQueueBinding(FanoutExchange analysisTaskResponseExchange, Queue analysisTaskResponseQueue) {
         return BindingBuilder.bind(analysisTaskResponseQueue)
-            .to(analysisTaskResponseExchange)
-            .with("");
+            .to(analysisTaskResponseExchange);
     }
 
     @Bean
