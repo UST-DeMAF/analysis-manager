@@ -9,6 +9,6 @@ public interface AnalysisTaskRepository extends JpaRepository<AnalysisTask, UUID
 
     public AnalysisTask getByTaskId(UUID taskId);
 
-    public List<AnalysisTask> getByStatus(AnalysisStatus status);
+    public List<AnalysisTask> getByStatusAndTransformationProcessId(AnalysisStatus status, UUID transformationProcessId);
     
 }

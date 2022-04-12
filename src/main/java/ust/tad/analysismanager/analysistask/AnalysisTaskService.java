@@ -104,18 +104,12 @@ public class AnalysisTaskService {
         return analysisTaskRepository.getByTaskId(taskId);
     }
 
-    public AnalysisTask getOneWaitingAnalysisTask() {
-        return analysisTaskRepository.getByStatus(AnalysisStatus.WAITING).get(0);
+    public AnalysisTask getOneWaitingAnalysisTask(UUID transformationProcessId) {
+        return analysisTaskRepository.getByStatusAndTransformationProcessId(AnalysisStatus.WAITING, transformationProcessId).get(0);
     }
 
-    public Boolean isTransformationCompleted() {
-        List<AnalysisTask> runningTasks = analysisTaskRepository.getByStatus(AnalysisStatus.RUNNING);
-        List<AnalysisTask> waitingTasks = analysisTaskRepository.getByStatus(AnalysisStatus.WAITING);
-        return runningTasks.isEmpty() && waitingTasks.isEmpty();
-    }
-
-    public Boolean areTasksWaiting() {
-        return !analysisTaskRepository.getByStatus(AnalysisStatus.WAITING).isEmpty();
+    public Boolean areTasksWaiting(UUID transformationProcessId) {
+        return !analysisTaskRepository.getByStatusAndTransformationProcessId(AnalysisStatus.WAITING, transformationProcessId).isEmpty();
     }
 
 

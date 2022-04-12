@@ -35,10 +35,11 @@ public class TransformationProcessService {
     private ModelsService modelsService;
 
     @Autowired
-    AnalysisTaskSender analysisTaskSender;
+    private AnalysisTaskSender analysisTaskSender;
 
     @Autowired
-    Terminal terminal;
+    private Terminal terminal;
+
 
     /**
      * Starts the transformation process.
@@ -114,7 +115,7 @@ public class TransformationProcessService {
                 e.printStackTrace();
             }
         }        
-        runNextWaitingTask();
+        runNextWaitingTask(analysisTask.getTransformationProcessId());
     }
 
     /**
@@ -125,10 +126,9 @@ public class TransformationProcessService {
      * If a plugin can be found update the analysis task and send a request.
      * 
      */
-    private void runNextWaitingTask() {
-        while(analysisTaskService.areTasksWaiting()) {
-            AnalysisTask analysisTask = analysisTaskService.getOneWaitingAnalysisTask();
-
+    private void runNextWaitingTask(UUID transformationProcessId) {
+        while(Boolean.TRUE.equals(analysisTaskService.areTasksWaiting(transformationProcessId))) {
+            AnalysisTask analysisTask = analysisTaskService.getOneWaitingAnalysisTask(transformationProcessId);
             Plugin plugin;
             try {
                 plugin = pluginService.getPluginByTechnology(analysisTask.getTechnology());
@@ -140,7 +140,7 @@ public class TransformationProcessService {
             AnalysisTask updatedTask = analysisTaskService.updateStatusToRunning(analysisTask, plugin.getId(), plugin.getAnalysisType());
             sendAnalysisTask(updatedTask);
         }
-        finishTransformationProcess();
+        finishTransformationProcess(transformationProcessId);
     }
 
     /**
@@ -155,17 +155,30 @@ public class TransformationProcessService {
         } catch (JsonProcessingException | AmqpException e) {
             e.printStackTrace();
             analysisTaskService.updateStatusToFailed(analysisTask);
-            runNextWaitingTask();
+            runNextWaitingTask(analysisTask.getTransformationProcessId());
         }
     }
 
-    private void finishTransformationProcess() {
-        //todo get result from models service
-        terminal.writer().println("Transformation process finished!");
-        terminal.flush();
-    }
+    /**
+     * Finish the transformation process by retrieving the result from the models service
+     * and printing it to the terminal.
+     * 
+     * @param transformationProcessId
+     */
+    private void finishTransformationProcess(UUID transformationProcessId) {
+        Result result = modelsService.getResult(transformationProcessId);
 
-    
+        terminal.writer().println("Transformation process finished!");
+        terminal.writer().println("Find the technology-agnostic deployment model under the following path:");
+        terminal.writer().println(result.getPath());
+        terminal.writer().println("Analysis Progress: "+result.getAnalysisProgress()*100+"%");
+        terminal.writer().println("Comprehensibility: "+result.getComprehensibility()*100+"%");
+        terminal.writer().println("Confidence: "+result.getConfidence()*100+"%");
+        terminal.writer().println("Type Completeness Val1: "+result.getTypeCompletenessVal1()*100+"%");
+        terminal.writer().println("Type Completeness Val2: "+result.getTypeCompletenessVal2()*100+"%");
+
+        terminal.flush();
+    }    
 
     
 }

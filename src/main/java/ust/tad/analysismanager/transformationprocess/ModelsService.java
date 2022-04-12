@@ -74,5 +74,20 @@ public class ModelsService {
             .bodyToMono(String.class)
             .block();
     }
+
+    /**
+     * Gets the result from the Models Service.
+     * 
+     * @param transformationProcessId
+     * @return the result.
+     */
+    public Result getResult(UUID transformationProcessId) {
+        return modelsServiceApiClient.get()
+            .uri("/result/"+transformationProcessId)
+            .accept(MediaType.APPLICATION_JSON)
+            .retrieve()
+            .bodyToMono(Result.class)
+            .block();
+    }
     
 }
