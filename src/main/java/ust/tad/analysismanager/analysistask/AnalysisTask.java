@@ -15,6 +15,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import ust.tad.analysismanager.shared.AnalysisType;
 
 @Entity
@@ -31,18 +34,21 @@ public class AnalysisTask {
 
     private AnalysisType analysisType;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
     private List<String> commands = new ArrayList<>();
 
     private AnalysisStatus status = AnalysisStatus.RUNNING;
 
     private UUID pluginId;
     
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
     private List<Location> locations = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "parentTaskId", referencedColumnName = "taskId")
+    @Fetch(value = FetchMode.SUBSELECT)
     private List<AnalysisTask> subTasks = new ArrayList<>();
 
 

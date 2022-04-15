@@ -7,6 +7,8 @@ import java.util.UUID;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import org.jline.terminal.Terminal;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.AmqpException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,9 @@ import ust.tad.analysismanager.shared.AnalysisType;
 
 @Service
 public class TransformationProcessService {
+    
+    private static final Logger LOG =
+      LoggerFactory.getLogger(TransformationProcessService.class);
 
     @Autowired
     private PluginService pluginService;
@@ -112,7 +117,7 @@ public class TransformationProcessService {
                 AnalysisTask newTask = analysisTaskService.createDynamicTaskFromStaticTask(analysisTask, plugin.getId());                
                 sendAnalysisTask(newTask);
             } catch (PluginException e) {
-                e.printStackTrace();
+                LOG.error(e.getMessage());
             }
         }        
         runNextWaitingTask(analysisTask.getTransformationProcessId());
@@ -133,12 +138,13 @@ public class TransformationProcessService {
             try {
                 plugin = pluginService.getPluginByTechnology(analysisTask.getTechnology());
             } catch (PluginException pluginException) { 
-                pluginException.printStackTrace();
+                LOG.error(pluginException.getMessage());
                 analysisTaskService.updateStatusToFailed(analysisTask);
                 continue;
             }
             AnalysisTask updatedTask = analysisTaskService.updateStatusToRunning(analysisTask, plugin.getId(), plugin.getAnalysisType());
             sendAnalysisTask(updatedTask);
+            return;
         }
         finishTransformationProcess(transformationProcessId);
     }

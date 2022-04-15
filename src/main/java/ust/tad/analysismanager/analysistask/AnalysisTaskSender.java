@@ -3,6 +3,8 @@ package ust.tad.analysismanager.analysistask;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.core.HeadersExchange;
 import org.springframework.amqp.core.Message;
@@ -11,9 +13,13 @@ import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AnalysisTaskSender {
+    
+    private static final Logger LOG =
+      LoggerFactory.getLogger(AnalysisTaskSender.class);
     
     @Autowired
     private RabbitTemplate template;
@@ -32,6 +38,8 @@ public class AnalysisTaskSender {
      * @throws AmqpException
      */
     public void send(AnalysisTask analysisTask) throws JsonProcessingException, AmqpException {
+        LOG.info("Sending AnalysisTask: "+analysisTask.toString());
+        
         AnalysisTaskStartRequest analysisTaskStartRequest = new AnalysisTaskStartRequest(
             analysisTask.getTaskId(), 
             analysisTask.getTransformationProcessId(), 
