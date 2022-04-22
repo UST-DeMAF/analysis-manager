@@ -2,9 +2,11 @@ package ust.tad.analysismanager.transformationprocess;
 
 import java.net.URL;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.jsontype.SubtypeResolver;
 
 import org.jline.terminal.Terminal;
 import org.slf4j.Logger;
@@ -13,6 +15,7 @@ import org.springframework.amqp.AmqpException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import ust.tad.analysismanager.analysistask.AnalysisStatus;
 import ust.tad.analysismanager.analysistask.AnalysisTask;
 import ust.tad.analysismanager.analysistask.AnalysisTaskSender;
 import ust.tad.analysismanager.analysistask.AnalysisTaskService;
@@ -104,6 +107,7 @@ public class TransformationProcessService {
      * Then determine the next task to run.
      * If the former task used static analysis technique, create a new dynamic task, 
      * search for a plugin and send an AnalysisTaskStartRequest.
+     * Otherwise, search for a waiting subTask of the completed analysis task.
      * If all this failes, look if other tasks wait for execution. 
      * 
      * @param analysisTaskResponse
@@ -116,10 +120,24 @@ public class TransformationProcessService {
                 plugin = pluginService.getPluginByTechnologyAndAnalysisType(analysisTask.getTechnology(), AnalysisType.DYNAMIC);
                 AnalysisTask newTask = analysisTaskService.createDynamicTaskFromStaticTask(analysisTask, plugin.getId());                
                 sendAnalysisTask(newTask);
+                return;
             } catch (PluginException e) {
                 LOG.error(e.getMessage());
             }
-        }        
+        }      
+        Optional<AnalysisTask> subTaskToRunOpt = analysisTask.getSubTasks().stream().filter(task -> task.getStatus() == AnalysisStatus.WAITING).findFirst();
+        if (subTaskToRunOpt.isPresent()) {
+            AnalysisTask subTaskToRun = subTaskToRunOpt.get();
+            try {
+                plugin = pluginService.getPluginByTechnology(subTaskToRun.getTechnology());
+                AnalysisTask updatedTask = analysisTaskService.updateStatusToRunning(subTaskToRun, plugin.getId(), plugin.getAnalysisType());
+                sendAnalysisTask(updatedTask);
+                return;
+            } catch (PluginException pluginException) { 
+                LOG.error(pluginException.getMessage());
+                analysisTaskService.updateStatusToFailed(subTaskToRun);
+            }
+        }  
         runNextWaitingTask(analysisTask.getTransformationProcessId());
     }
 
@@ -137,14 +155,13 @@ public class TransformationProcessService {
             Plugin plugin;
             try {
                 plugin = pluginService.getPluginByTechnology(analysisTask.getTechnology());
+                AnalysisTask updatedTask = analysisTaskService.updateStatusToRunning(analysisTask, plugin.getId(), plugin.getAnalysisType());
+                sendAnalysisTask(updatedTask);
+                return;
             } catch (PluginException pluginException) { 
                 LOG.error(pluginException.getMessage());
                 analysisTaskService.updateStatusToFailed(analysisTask);
-                continue;
             }
-            AnalysisTask updatedTask = analysisTaskService.updateStatusToRunning(analysisTask, plugin.getId(), plugin.getAnalysisType());
-            sendAnalysisTask(updatedTask);
-            return;
         }
         finishTransformationProcess(transformationProcessId);
     }
