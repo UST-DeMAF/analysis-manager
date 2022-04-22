@@ -3,6 +3,8 @@ package ust.tad.analysismanager.transformationprocess;
 import java.util.List;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -14,6 +16,9 @@ import ust.tad.analysismanager.analysistask.Location;
 
 @Service
 public class ModelsService {
+    
+    private static final Logger LOG =
+      LoggerFactory.getLogger(ModelsService.class);
 
     @Autowired
     private WebClient modelsServiceApiClient;
@@ -44,6 +49,7 @@ public class ModelsService {
         initializeTechnologySpecificDeploymentModelRequest.setCommands(commands);
         initializeTechnologySpecificDeploymentModelRequest.setLocations(List.of(location));
 
+        LOG.info("Initializing technology-specific deployment model.");
         return modelsServiceApiClient.post()
             .uri("/technology-specific/init")
             .contentType(MediaType.APPLICATION_JSON)
@@ -62,6 +68,7 @@ public class ModelsService {
      * @return the created technology-agnostic deployment model as a JSON String.
      */
     public String initializeTechnologyAgnosticDeploymentModel(UUID transformationProcessId) {
+        LOG.info("Initializing technology-agnostic deployment model.");
         return modelsServiceApiClient.post()
             .uri(uriBuilder -> uriBuilder
                 .path("/technology-agnostic/init")
@@ -82,6 +89,7 @@ public class ModelsService {
      * @return the result.
      */
     public Result getResult(UUID transformationProcessId) {
+        LOG.info("Requesting result from models service.");
         return modelsServiceApiClient.get()
             .uri("/result/"+transformationProcessId)
             .accept(MediaType.APPLICATION_JSON)

@@ -22,7 +22,7 @@ public class PluginRegistrationController {
     @PostMapping(consumes = "application/json", produces = "application/json")
     public PluginRegistrationResponse registerPlugin(
         @RequestBody PluginRegistrationRequest pluginRegistrationRequest) {  
-           return pluginRegistrationService.registerPlugin(pluginRegistrationRequest);     
+            return pluginRegistrationService.registerPlugin(pluginRegistrationRequest);     
     }
     
 }
