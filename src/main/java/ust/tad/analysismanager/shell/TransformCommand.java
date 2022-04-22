@@ -3,6 +3,8 @@ package ust.tad.analysismanager.shell;
 import java.net.URL;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.standard.ShellCommandGroup;
 import org.springframework.shell.standard.ShellComponent;
@@ -14,6 +16,9 @@ import ust.tad.analysismanager.transformationprocess.TransformationProcessServic
 @ShellComponent
 @ShellCommandGroup("Transformation Commands")
 public class TransformCommand {
+    
+    private static final Logger LOG =
+      LoggerFactory.getLogger(TransformCommand.class);
 
     @Autowired
     private TransformationProcessService transformationProcessService;
@@ -31,6 +36,7 @@ public class TransformCommand {
             help = "The commands for executing the deployment model. Use a comma-separated list for specifiying multiple commands.") 
             List<String> commands
         ) {
-        return transformationProcessService.startTransformationProcess(technology, location, commands);        
+            LOG.info("Received command to start transformation process for technology "+technology+" at location "+location+" with commands "+commands.toString());
+            return transformationProcessService.startTransformationProcess(technology, location, commands);        
     }
 }
