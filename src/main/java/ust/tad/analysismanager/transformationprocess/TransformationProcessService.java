@@ -6,7 +6,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.jsontype.SubtypeResolver;
 
 import org.jline.terminal.Terminal;
 import org.slf4j.Logger;
@@ -122,7 +121,7 @@ public class TransformationProcessService {
                 sendAnalysisTask(newTask);
                 return;
             } catch (PluginException e) {
-                LOG.error(e.getMessage());
+                //LOG.error(e.getMessage());
             }
         }      
         Optional<AnalysisTask> subTaskToRunOpt = analysisTask.getSubTasks().stream().filter(task -> task.getStatus() == AnalysisStatus.WAITING).findFirst();
@@ -134,7 +133,7 @@ public class TransformationProcessService {
                 sendAnalysisTask(updatedTask);
                 return;
             } catch (PluginException pluginException) { 
-                LOG.error(pluginException.getMessage());
+                //LOG.error(pluginException.getMessage());
                 analysisTaskService.updateStatusToFailed(subTaskToRun);
             }
         }  
@@ -159,7 +158,7 @@ public class TransformationProcessService {
                 sendAnalysisTask(updatedTask);
                 return;
             } catch (PluginException pluginException) { 
-                LOG.error(pluginException.getMessage());
+                //LOG.error(pluginException.getMessage());
                 analysisTaskService.updateStatusToFailed(analysisTask);
             }
         }

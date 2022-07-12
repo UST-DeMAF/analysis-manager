@@ -46,7 +46,7 @@ public class AnalysisTaskResponseReceiver {
       AnalysisTaskResponse analysisTaskResponse = mapper.convertValue(
           jsonMessageConverter.fromMessage(message), 
           AnalysisTaskResponse.class);
-      LOG.info("received AnalysisTaskResponse: " + analysisTaskResponse.toString());
+      //LOG.info("received AnalysisTaskResponse: " + analysisTaskResponse.toString());
       transformationProcessService.handleAnalysisTaskResponse(analysisTaskResponse);      
     }
 
@@ -56,7 +56,7 @@ public class AnalysisTaskResponseReceiver {
       EmbeddedDeploymentModelAnalysisRequest embeddedDeploymentModelAnalysisRequest = mapper.convertValue(
           jsonMessageConverter.fromMessage(message), 
           EmbeddedDeploymentModelAnalysisRequest.class);
-      LOG.info("received EmbeddedDeploymentModelAnalysisRequest: " + embeddedDeploymentModelAnalysisRequest.toString());
+      //LOG.info("received EmbeddedDeploymentModelAnalysisRequest: " + embeddedDeploymentModelAnalysisRequest.toString());
       transformationProcessService.handleEmbeddedDeploymentModelAnalysisRequest(embeddedDeploymentModelAnalysisRequest);
     }
 

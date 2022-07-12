@@ -44,7 +44,7 @@ public class PluginRegistrationService {
      * @return
      */
     public PluginRegistrationResponse registerPlugin(PluginRegistrationRequest pluginRegistrationRequest){
-        LOG.info("Registering plugin for technology "+pluginRegistrationRequest.getTechnology()+" and analysis type "+pluginRegistrationRequest.getAnalysisType().toString());
+        //LOG.info("Registering plugin for technology "+pluginRegistrationRequest.getTechnology()+" and analysis type "+pluginRegistrationRequest.getAnalysisType().toString());
         String requestQueueName = createRequestQueueName(pluginRegistrationRequest);
         createRequestQueue(requestQueueName, pluginRegistrationRequest);        
 

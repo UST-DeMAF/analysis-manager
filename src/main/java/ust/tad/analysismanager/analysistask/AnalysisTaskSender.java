@@ -37,7 +37,7 @@ public class AnalysisTaskSender {
      * @throws AmqpException
      */
     public void send(AnalysisTask analysisTask) throws JsonProcessingException, AmqpException {
-        LOG.info("Sending AnalysisTask: "+analysisTask.toString());
+        //LOG.info("Sending AnalysisTask: "+analysisTask.toString());
         
         AnalysisTaskStartRequest analysisTaskStartRequest = new AnalysisTaskStartRequest(
             analysisTask.getTaskId(), 

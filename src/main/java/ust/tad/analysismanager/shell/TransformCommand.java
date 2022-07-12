@@ -36,7 +36,7 @@ public class TransformCommand {
             help = "The commands for executing the deployment model. Use a comma-separated list for specifiying multiple commands.") 
             List<String> commands
         ) {
-            LOG.info("Received command to start transformation process for technology "+technology+" at location "+location+" with commands "+commands.toString());
+            //LOG.info("Received command to start transformation process for technology "+technology+" at location "+location+" with commands "+commands.toString());
             return transformationProcessService.startTransformationProcess(technology, location, commands);        
     }
 }

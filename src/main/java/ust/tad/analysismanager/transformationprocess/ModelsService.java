@@ -49,7 +49,7 @@ public class ModelsService {
         initializeTechnologySpecificDeploymentModelRequest.setCommands(commands);
         initializeTechnologySpecificDeploymentModelRequest.setLocations(List.of(location));
 
-        LOG.info("Initializing technology-specific deployment model.");
+        //LOG.info("Initializing technology-specific deployment model.");
         return modelsServiceApiClient.post()
             .uri("/technology-specific/init")
             .contentType(MediaType.APPLICATION_JSON)
@@ -68,7 +68,7 @@ public class ModelsService {
      * @return the created technology-agnostic deployment model as a JSON String.
      */
     public String initializeTechnologyAgnosticDeploymentModel(UUID transformationProcessId) {
-        LOG.info("Initializing technology-agnostic deployment model.");
+        //LOG.info("Initializing technology-agnostic deployment model.");
         return modelsServiceApiClient.post()
             .uri(uriBuilder -> uriBuilder
                 .path("/technology-agnostic/init")
@@ -89,7 +89,7 @@ public class ModelsService {
      * @return the result.
      */
     public Result getResult(UUID transformationProcessId) {
-        LOG.info("Requesting result from models service.");
+        //LOG.info("Requesting result from models service.");
         return modelsServiceApiClient.get()
             .uri("/result/"+transformationProcessId)
             .accept(MediaType.APPLICATION_JSON)

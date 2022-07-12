@@ -10,7 +10,7 @@ public class ShellConfig implements PromptProvider{
 
         @Override
         public AttributedString getPrompt() {
-            return new AttributedString("tad-shell" + ":>",
+            return new AttributedString("DeMAF-shell" + ":>",
                     AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW));
         }
     
