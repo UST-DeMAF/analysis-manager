@@ -2,8 +2,6 @@ package ust.tad.analysismanager.plugin;
 
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.HeadersExchange;
@@ -16,9 +14,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class PluginRegistrationService {
     
-    private static final Logger LOG =
-      LoggerFactory.getLogger(PluginRegistrationService.class);
-
     @Autowired
     private PluginRepository pluginRepository;
 
@@ -44,7 +39,6 @@ public class PluginRegistrationService {
      * @return
      */
     public PluginRegistrationResponse registerPlugin(PluginRegistrationRequest pluginRegistrationRequest){
-        //LOG.info("Registering plugin for technology "+pluginRegistrationRequest.getTechnology()+" and analysis type "+pluginRegistrationRequest.getAnalysisType().toString());
         String requestQueueName = createRequestQueueName(pluginRegistrationRequest);
         createRequestQueue(requestQueueName, pluginRegistrationRequest);        
 

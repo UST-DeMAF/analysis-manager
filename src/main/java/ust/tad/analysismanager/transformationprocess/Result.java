@@ -2,18 +2,49 @@ package ust.tad.analysismanager.transformationprocess;
 
 import java.util.Objects;
 
+/**
+ * The result of the transformation process.
+ */
 public class Result {
 
+    /**
+     * A file path to the generated technology-agnostic deployment model.
+     */
     private String path;
 
+    /**
+     * The Analysis Progress metric.
+     * Gives the proportion of the technology-specific deployment model that the DeMAF analyzed. 
+     * Measured in percent.
+     */
     private double analysisProgress;
 
+    /**
+     * The Comprehensibility metric.
+     * Gives the proportion of the technology-specific deployment model that the DeMAF can comprehend. 
+     * Measured in percent.
+     */
     private double comprehensibility;
 
+    /**
+     * The Confidence metric.
+     * Gives the proportion of entities in the technology-agnostic deployment model that the DeMAF is confident about
+     * that they are part of the application deployment.
+     * Measured in percent.
+     */
     private double confidence;
 
+    /**
+     * The first value of the Type Completeness metric.
+     * Gives the percentage of required Properties and Operations in relation to the present ones in all 
+     * Relations and Components for the whole technology-agnostic deployment model combined.
+     */
     private double typeCompletenessVal1;
 
+    /**
+     * The second value of the Type Completeness metric.
+     * Gives the the percentage of Components and Relations that are type complete.
+     */
     private double typeCompletenessVal2;
 
 

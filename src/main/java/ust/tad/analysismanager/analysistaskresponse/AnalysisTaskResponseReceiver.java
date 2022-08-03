@@ -2,8 +2,6 @@ package ust.tad.analysismanager.analysistaskresponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.support.converter.MessageConverter;
@@ -18,9 +16,6 @@ public class AnalysisTaskResponseReceiver {
 
     @Autowired
     private TransformationProcessService transformationProcessService;
-
-    private static final Logger LOG =
-      LoggerFactory.getLogger(AnalysisTaskResponseReceiver.class);
 
     @RabbitListener(queues = "#{analysisTaskResponseQueue.name}")
     public void receive(Message message) {
@@ -46,7 +41,6 @@ public class AnalysisTaskResponseReceiver {
       AnalysisTaskResponse analysisTaskResponse = mapper.convertValue(
           jsonMessageConverter.fromMessage(message), 
           AnalysisTaskResponse.class);
-      //LOG.info("received AnalysisTaskResponse: " + analysisTaskResponse.toString());
       transformationProcessService.handleAnalysisTaskResponse(analysisTaskResponse);      
     }
 
@@ -56,7 +50,6 @@ public class AnalysisTaskResponseReceiver {
       EmbeddedDeploymentModelAnalysisRequest embeddedDeploymentModelAnalysisRequest = mapper.convertValue(
           jsonMessageConverter.fromMessage(message), 
           EmbeddedDeploymentModelAnalysisRequest.class);
-      //LOG.info("received EmbeddedDeploymentModelAnalysisRequest: " + embeddedDeploymentModelAnalysisRequest.toString());
       transformationProcessService.handleEmbeddedDeploymentModelAnalysisRequest(embeddedDeploymentModelAnalysisRequest);
     }
 

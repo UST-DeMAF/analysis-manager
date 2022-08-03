@@ -112,5 +112,14 @@ public class AnalysisTaskService {
         return !analysisTaskRepository.getByStatusAndTransformationProcessId(AnalysisStatus.WAITING, transformationProcessId).isEmpty();
     }
 
+    public Boolean areTasksWaitingOrRunning(UUID transformationProcessId) throws TransformationProcessNotExistingException {
+        if(!analysisTaskRepository.existsByTransformationProcessId(transformationProcessId)) {
+            throw new TransformationProcessNotExistingException("A transformation process with this id does not exist.");
+        }
+
+        return !analysisTaskRepository.getByStatusAndTransformationProcessId(AnalysisStatus.WAITING, transformationProcessId).isEmpty() || 
+        !analysisTaskRepository.getByStatusAndTransformationProcessId(AnalysisStatus.RUNNING, transformationProcessId).isEmpty();
+    }
+
 
 }
