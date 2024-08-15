@@ -23,15 +23,9 @@ jobs:
         run: echo $DOCKER_HUB_TOKEN | docker login -u well5a --password-stdin
         env:
           DOCKER_HUB_TOKEN: ${{ secrets.DOCKERHUBTOKEN }}
+          
+      - name: Build the Docker image
+        run: docker build . --file Dockerfile --tag well5a/$IMAGE_NAME:$IMAGE_TAG
 
-      - name: Install pack CLI via the official buildpack Action https://github.com/buildpacks/github-actions#setup-pack-cli-action
-        uses: buildpacks/github-actions/setup-pack@v4.8.0
-
-      - name: Build app with pack CLI using Buildpack Cache image (see https://buildpacks.io/docs/app-developer-guide/using-cache-image/) & publish to Docker Hub
-        run: |
-          pack build index.docker.io/well5a/$IMAGE_NAME:$IMAGE_TAG \
-              --builder paketobuildpacks/builder:base \
-              --path . \
-              --cache-image index.docker.io/well5a/$IMAGE_NAME-paketo-cache-image:$IMAGE_TAG \
-              --publish
-
+      - name: Push the Docker image
+        run: docker push well5a/$IMAGE_NAME:$IMAGE_TAG
