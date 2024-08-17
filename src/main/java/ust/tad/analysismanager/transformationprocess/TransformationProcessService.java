@@ -60,14 +60,24 @@ public class TransformationProcessService {
     public UUID startTransformationProcess(TechnologySpecificDeploymentModel tsdm) throws PluginException, JsonProcessingException, AmqpException {
         UUID transformationProcessId = UUID.randomUUID();
 
-        Plugin plugin = pluginService.getPluginByTechnology(tsdm.getTechnology());
+        String technology = tsdm.getTechnology();
+        boolean visualize = tsdm.getCommands().contains("--visualize=false") ? false : true;
+
+        Plugin analysisPlugin = pluginService.getPluginByTechnology(technology);
         AnalysisTask analysisTask = analysisTaskService.createAnalysisTask(
-            transformationProcessId, tsdm.getTechnology(), plugin.getAnalysisType(), tsdm.getLocationURL(), tsdm.getCommands(), plugin.getId());
+            transformationProcessId, technology, analysisPlugin.getAnalysisType(), tsdm.getLocationURL(), tsdm.getCommands(), analysisPlugin.getId());
 
         Location location = new Location();
         location.setUrl(tsdm.getLocationURL());
         modelsService.initializeTechnologySpecificDeploymentModel(transformationProcessId, tsdm.getTechnology(), tsdm.getCommands(), location);
         modelsService.initializeTechnologyAgnosticDeploymentModel(transformationProcessId);
+
+        if (visualize && !technology.equals("layout-pipeline")) {
+            Plugin visualizationPlugin = pluginService.getPluginByTechnology("layout-pipeline");
+            AnalysisTask visualizationTask = analysisTaskService.createAnalysisTask(
+                    transformationProcessId, "layout-pipeline", visualizationPlugin.getAnalysisType(), null, null, visualizationPlugin.getId());
+            analysisTask.addSubtask(visualizationTask);
+        }
 
         analysisTaskSender.send(analysisTask);
 
