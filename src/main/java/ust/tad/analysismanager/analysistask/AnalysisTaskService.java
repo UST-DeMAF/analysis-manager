@@ -2,6 +2,7 @@ package ust.tad.analysismanager.analysistask;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,19 +16,20 @@ import ust.tad.analysismanager.shared.AnalysisType;
 @Service
 public class AnalysisTaskService {
 
+    private final HashMap<UUID, Process> processes = new HashMap<>();
+
     @Autowired
     private AnalysisTaskRepository analysisTaskRepository;
 
     @Autowired
     private LocationService locationService;
 
-    
     public AnalysisTask createAnalysisTask(
-        UUID transformationProcessId, 
-        String technology, 
-        AnalysisType analysisType, 
-        URL url, 
-        List<String> commands, 
+        UUID transformationProcessId,
+        String technology,
+        AnalysisType analysisType,
+        URL url,
+        List<String> commands,
         UUID pluginId) {
 
         Location location = locationService.createLocation(url);
@@ -39,9 +41,33 @@ public class AnalysisTaskService {
         newAnalysisTask.setTechnology(technology);
         newAnalysisTask.setAnalysisType(analysisType);
         newAnalysisTask.setCommands(commands);
-        newAnalysisTask.setPluginId(pluginId);        
+        newAnalysisTask.setPluginId(pluginId);
         newAnalysisTask.setLocations(locations);
-        return analysisTaskRepository.save(newAnalysisTask);        
+
+        AnalysisTask analysisTask = analysisTaskRepository.save(newAnalysisTask);
+
+        if (processes.isEmpty() || !processes.containsKey(transformationProcessId)) {
+            Process process = new Process();
+            process.mainTaskId = analysisTask.getTaskId();
+            process.transformationProcessId = transformationProcessId;
+            process.activeTasks++;
+
+            if (!technology.equals("layout-pipeline")) {
+                process.visualize = true;
+                for (String command : commands) {
+                    if (command.contains("visualize=false")) {
+                        process.visualize = false;
+                        break;
+                    }
+                }
+            }
+
+            processes.put(transformationProcessId, process);
+        } else {
+            Process process = processes.get(transformationProcessId);
+            process.activeTasks++;
+        }
+        return analysisTask;
     }
 
     public AnalysisTask createAnalysisTaskFromEmbeddedDeploymentModelAnalysisRequest(EmbeddedDeploymentModelAnalysisRequest request) {
@@ -67,23 +93,56 @@ public class AnalysisTaskService {
         newAnalysisTask.setTechnology(staticTask.getTechnology());
         newAnalysisTask.setAnalysisType(AnalysisType.DYNAMIC);
         newAnalysisTask.setCommands(staticTask.getCommands());
-        newAnalysisTask.setPluginId(pluginId);        
+        newAnalysisTask.setPluginId(pluginId);
         newAnalysisTask.setLocations(locations);
-        return analysisTaskRepository.save(newAnalysisTask);    
+        return analysisTaskRepository.save(newAnalysisTask);
     }
 
     public AnalysisTask addSubtask(UUID parentTaskId, AnalysisTask subTask) {
         AnalysisTask parentTask = analysisTaskRepository.getByTaskId(parentTaskId);
         parentTask.addSubtask(subTask);
-        return analysisTaskRepository.save(parentTask);        
+
+        Process process = processes.get(parentTask.getTransformationProcessId());
+        process.activeTasks++;
+
+        return analysisTaskRepository.save(parentTask);
     }
 
     public AnalysisTask updateStatusFromAnalysisTaskResponse(AnalysisTaskResponse response) {
-        AnalysisTask task = analysisTaskRepository.getByTaskId(response.getTaskId());
-        if(response.getSuccess()) {
+        boolean responseSuccess = response.getSuccess();
+        UUID responseTaskId = response.getTaskId();
+
+        AnalysisTask task = analysisTaskRepository.getByTaskId(responseTaskId);
+
+        if (responseSuccess) {
             task.setStatus(AnalysisStatus.FINISHED);
         } else {
-            task.setStatus(AnalysisStatus.FAILED);            
+            task.setStatus(AnalysisStatus.FAILED);
+        }
+
+        Process process = processes.get(task.getTransformationProcessId());
+        process.activeTasks--;
+
+        if (process.visualize) {
+            if (process.activeTasks == 0 && process.visualizationTaskId == null && responseSuccess) {
+                AnalysisTask newVisualizationTask = new AnalysisTask();
+
+                newVisualizationTask.setTransformationProcessId(process.transformationProcessId);
+                newVisualizationTask.setTechnology("layout-pipeline");
+                newVisualizationTask.setCommands(null);
+                newVisualizationTask.setLocations(null);
+                newVisualizationTask.setStatus(AnalysisStatus.WAITING);
+
+                AnalysisTask visualizationTask = analysisTaskRepository.save(newVisualizationTask);
+                addSubtask(process.mainTaskId, visualizationTask);
+                process.visualizationTaskId = visualizationTask.getTaskId();
+            } else if (process.activeTasks == 0 && responseTaskId.equals(process.visualizationTaskId)) {
+                processes.remove(process.transformationProcessId);
+            }
+        } else {
+            if (process.activeTasks == 0) {
+                processes.remove(process.transformationProcessId);
+            }
         }
         return analysisTaskRepository.save(task);
     }
@@ -113,13 +172,18 @@ public class AnalysisTaskService {
     }
 
     public Boolean areTasksWaitingOrRunning(UUID transformationProcessId) throws TransformationProcessNotExistingException {
-        if(!analysisTaskRepository.existsByTransformationProcessId(transformationProcessId)) {
+        if (!analysisTaskRepository.existsByTransformationProcessId(transformationProcessId)) {
             throw new TransformationProcessNotExistingException("A transformation process with this id does not exist.");
         }
 
-        return !analysisTaskRepository.getByStatusAndTransformationProcessId(AnalysisStatus.WAITING, transformationProcessId).isEmpty() || 
-        !analysisTaskRepository.getByStatusAndTransformationProcessId(AnalysisStatus.RUNNING, transformationProcessId).isEmpty();
+        return !analysisTaskRepository.getByStatusAndTransformationProcessId(AnalysisStatus.WAITING, transformationProcessId).isEmpty() || !analysisTaskRepository.getByStatusAndTransformationProcessId(AnalysisStatus.RUNNING, transformationProcessId).isEmpty();
     }
 
-
+    private static class Process {
+        UUID mainTaskId = null;
+        UUID transformationProcessId = null;
+        UUID visualizationTaskId = null;
+        boolean visualize = false;
+        int activeTasks = 0;
+    }
 }
