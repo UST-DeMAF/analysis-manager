@@ -179,6 +179,10 @@ public class AnalysisTaskService {
         return !analysisTaskRepository.getByStatusAndTransformationProcessId(AnalysisStatus.WAITING, transformationProcessId).isEmpty() || !analysisTaskRepository.getByStatusAndTransformationProcessId(AnalysisStatus.RUNNING, transformationProcessId).isEmpty();
     }
 
+    public Boolean hasNoTaskFailed(UUID transformationProcessId) {
+        return analysisTaskRepository.getByStatusAndTransformationProcessId(AnalysisStatus.FAILED, transformationProcessId).isEmpty();
+    }
+
     private static class Process {
         UUID mainTaskId = null;
         UUID transformationProcessId = null;
