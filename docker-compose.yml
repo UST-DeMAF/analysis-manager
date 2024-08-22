@@ -169,7 +169,7 @@ services:
 
   # Plugins
   ansibleplugin:
-    image: ghcr.io/ust-demaf/ansible-mps-plugin:lightning # using the ghcr
+    image: ghcr.io/ust-demaf/ansible-mps-plugin:testing # using the ghcr
     hostname: ansibleplugin
     container_name: ansibleplugin
     depends_on:
