@@ -50,6 +50,7 @@ public class AnalysisTaskService {
             Process process = new Process();
             process.mainTaskId = analysisTask.getTaskId();
             process.transformationProcessId = transformationProcessId;
+            process.commands = commands;
             process.activeTasks++;
 
             if (!technology.equals("layout-pipeline")) {
@@ -129,7 +130,7 @@ public class AnalysisTaskService {
 
                 newVisualizationTask.setTransformationProcessId(process.transformationProcessId);
                 newVisualizationTask.setTechnology("layout-pipeline");
-                newVisualizationTask.setCommands(null);
+                newVisualizationTask.setCommands(process.commands);
                 newVisualizationTask.setLocations(null);
                 newVisualizationTask.setStatus(AnalysisStatus.WAITING);
 
@@ -189,5 +190,6 @@ public class AnalysisTaskService {
         UUID visualizationTaskId = null;
         boolean visualize = false;
         int activeTasks = 0;
+        List<String> commands;
     }
 }
