@@ -36,7 +36,8 @@ public class AnalysisTaskSender {
         AnalysisTaskStartRequest analysisTaskStartRequest = new AnalysisTaskStartRequest(
             analysisTask.getTaskId(), 
             analysisTask.getTransformationProcessId(), 
-            analysisTask.getCommands(), 
+            analysisTask.getCommands(),
+            analysisTask.getOptions(),
             analysisTask.getLocations());        
         
         ObjectMapper objectMapper = new ObjectMapper();

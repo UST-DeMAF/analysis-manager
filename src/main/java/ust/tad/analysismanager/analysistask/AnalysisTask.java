@@ -38,6 +38,10 @@ public class AnalysisTask {
     @Fetch(value = FetchMode.SUBSELECT)
     private List<String> commands = new ArrayList<>();
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
+    private List<String> options = new ArrayList<>();
+
     private AnalysisStatus status = AnalysisStatus.RUNNING;
 
     private UUID pluginId;
@@ -55,11 +59,12 @@ public class AnalysisTask {
     public AnalysisTask() {
     }
 
-    public AnalysisTask(UUID transformationProcessId, String technology, AnalysisType analysisType, List<String> commands, AnalysisStatus status, UUID pluginId, List<Location> locations, List<AnalysisTask> subTasks) {
+    public AnalysisTask(UUID transformationProcessId, String technology, AnalysisType analysisType, List<String> commands, List<String> options, AnalysisStatus status, UUID pluginId, List<Location> locations, List<AnalysisTask> subTasks) {
         this.transformationProcessId = transformationProcessId;
         this.technology = technology;
         this.analysisType = analysisType;
         this.commands = commands;
+        this.options = options;
         this.status = status;
         this.pluginId = pluginId;
         this.locations = locations;
@@ -105,6 +110,10 @@ public class AnalysisTask {
     public AnalysisStatus getStatus() {
         return this.status;
     }
+
+    public List<String> getOptions() { return this.options; }
+
+    public void setOptions(List<String> options) { this.options = options; }
 
     public void setStatus(AnalysisStatus status) {
         this.status = status;
@@ -154,6 +163,11 @@ public class AnalysisTask {
         return this;
     }
 
+    public AnalysisTask options(List<String> options) {
+        setOptions(options);
+        return this;
+    }
+
     public AnalysisTask status(AnalysisStatus status) {
         setStatus(status);
         return this;
@@ -182,12 +196,12 @@ public class AnalysisTask {
             return false;
         }
         AnalysisTask analysisTask = (AnalysisTask) o;
-        return Objects.equals(taskId, analysisTask.taskId) && Objects.equals(transformationProcessId, analysisTask.transformationProcessId) && Objects.equals(technology, analysisTask.technology) && Objects.equals(analysisType, analysisTask.analysisType) && Objects.equals(commands, analysisTask.commands) && Objects.equals(status, analysisTask.status) && Objects.equals(pluginId, analysisTask.pluginId) && Objects.equals(locations, analysisTask.locations) && Objects.equals(subTasks, analysisTask.subTasks);
+        return Objects.equals(taskId, analysisTask.taskId) && Objects.equals(transformationProcessId, analysisTask.transformationProcessId) && Objects.equals(technology, analysisTask.technology) && Objects.equals(analysisType, analysisTask.analysisType) && Objects.equals(commands, analysisTask.commands) && Objects.equals(options, analysisTask.options) && Objects.equals(status, analysisTask.status) && Objects.equals(pluginId, analysisTask.pluginId) && Objects.equals(locations, analysisTask.locations) && Objects.equals(subTasks, analysisTask.subTasks);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(taskId, transformationProcessId, technology, analysisType, commands, status, pluginId, locations, subTasks);
+        return Objects.hash(taskId, transformationProcessId, technology, analysisType, commands, options, status, pluginId, locations, subTasks);
     }
 
     @Override
@@ -198,6 +212,7 @@ public class AnalysisTask {
             ", technology='" + getTechnology() + "'" +
             ", analysisType='" + getAnalysisType() + "'" +
             ", commands='" + getCommands() + "'" +
+            ", options='" + getOptions() + "'" +
             ", status='" + getStatus() + "'" +
             ", pluginQueueName='" + getPluginId() + "'" +
             ", locations='" + getLocations() + "'" +

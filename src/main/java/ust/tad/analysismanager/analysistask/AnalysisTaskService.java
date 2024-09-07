@@ -30,6 +30,7 @@ public class AnalysisTaskService {
         AnalysisType analysisType,
         URL url,
         List<String> commands,
+        List<String> options,
         UUID pluginId) {
 
         Location location = locationService.createLocation(url);
@@ -41,6 +42,7 @@ public class AnalysisTaskService {
         newAnalysisTask.setTechnology(technology);
         newAnalysisTask.setAnalysisType(analysisType);
         newAnalysisTask.setCommands(commands);
+        newAnalysisTask.setOptions(options);
         newAnalysisTask.setPluginId(pluginId);
         newAnalysisTask.setLocations(locations);
 
@@ -50,13 +52,13 @@ public class AnalysisTaskService {
             Process process = new Process();
             process.mainTaskId = analysisTask.getTaskId();
             process.transformationProcessId = transformationProcessId;
-            process.commands = commands;
+            process.options = options;
             process.activeTasks++;
 
             if (!technology.equals("layout-pipeline")) {
                 process.visualize = true;
-                for (String command : commands) {
-                    if (command.contains("visualize=false")) {
+                for (String option : options) {
+                    if (option.contains("visualize=false")) {
                         process.visualize = false;
                         break;
                     }
@@ -78,6 +80,7 @@ public class AnalysisTaskService {
         analysisTask.setTransformationProcessId(request.getTransformationProcessId());
         analysisTask.setTechnology(request.getTechnology());
         analysisTask.setCommands(request.getCommands());
+        analysisTask.setOptions(request.getOptions());
         analysisTask.setLocations(savedLocations);
         analysisTask.setStatus(AnalysisStatus.WAITING);
         AnalysisTask newTask = analysisTaskRepository.save(analysisTask);
@@ -94,6 +97,7 @@ public class AnalysisTaskService {
         newAnalysisTask.setTechnology(staticTask.getTechnology());
         newAnalysisTask.setAnalysisType(AnalysisType.DYNAMIC);
         newAnalysisTask.setCommands(staticTask.getCommands());
+        newAnalysisTask.setOptions(staticTask.getOptions());
         newAnalysisTask.setPluginId(pluginId);
         newAnalysisTask.setLocations(locations);
         return analysisTaskRepository.save(newAnalysisTask);
@@ -130,7 +134,8 @@ public class AnalysisTaskService {
 
                 newVisualizationTask.setTransformationProcessId(process.transformationProcessId);
                 newVisualizationTask.setTechnology("layout-pipeline");
-                newVisualizationTask.setCommands(process.commands);
+                newVisualizationTask.setCommands(null);
+                newVisualizationTask.setOptions(process.options);
                 newVisualizationTask.setLocations(null);
                 newVisualizationTask.setStatus(AnalysisStatus.WAITING);
 
@@ -190,6 +195,6 @@ public class AnalysisTaskService {
         UUID visualizationTaskId = null;
         boolean visualize = false;
         int activeTasks = 0;
-        List<String> commands;
+        List<String> options;
     }
 }

@@ -59,7 +59,7 @@ public class TransformationProcessService {
         String technology = tsdm.getTechnology();
         Plugin plugin = pluginService.getPluginByTechnology(technology);
         AnalysisTask analysisTask = analysisTaskService.createAnalysisTask(
-                transformationProcessId, tsdm.getTechnology(), plugin.getAnalysisType(), tsdm.getLocationURL(), tsdm.getCommands(), plugin.getId());
+                transformationProcessId, tsdm.getTechnology(), plugin.getAnalysisType(), tsdm.getLocationURL(), tsdm.getCommands(), tsdm.getOptions(), plugin.getId());
 
         Location location = new Location();
         location.setUrl(tsdm.getLocationURL());
