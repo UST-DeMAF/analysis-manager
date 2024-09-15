@@ -3,7 +3,6 @@ package ust.tad.analysismanager.analysistask;
 import java.net.URL;
 import java.util.Objects;
 import java.util.UUID;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -11,96 +10,103 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="Location")
+@Table(name = "Location")
 public class Location {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;
-    
-    private URL url;
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private UUID id;
 
-    private int startLineNumber;
-    
-    private int endLineNumber;    
+  private URL url;
 
+  private int startLineNumber;
 
-    public Location() {
+  private int endLineNumber;
+
+  public Location() {}
+
+  public Location(URL url, int startLineNumber, int endLineNumber) {
+    this.url = url;
+    this.startLineNumber = startLineNumber;
+    this.endLineNumber = endLineNumber;
+  }
+
+  public UUID getId() {
+    return this.id;
+  }
+
+  public URL getUrl() {
+    return this.url;
+  }
+
+  public void setUrl(URL url) {
+    this.url = url;
+  }
+
+  public int getStartLineNumber() {
+    return this.startLineNumber;
+  }
+
+  public void setStartLineNumber(int startLineNumber) {
+    this.startLineNumber = startLineNumber;
+  }
+
+  public int getEndLineNumber() {
+    return this.endLineNumber;
+  }
+
+  public void setEndLineNumber(int endLineNumber) {
+    this.endLineNumber = endLineNumber;
+  }
+
+  public Location url(URL url) {
+    setUrl(url);
+    return this;
+  }
+
+  public Location startLineNumber(int startLineNumber) {
+    setStartLineNumber(startLineNumber);
+    return this;
+  }
+
+  public Location endLineNumber(int endLineNumber) {
+    setEndLineNumber(endLineNumber);
+    return this;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o == this) return true;
+    if (!(o instanceof Location)) {
+      return false;
     }
+    Location location = (Location) o;
+    return Objects.equals(id, location.id)
+        && Objects.equals(url, location.url)
+        && startLineNumber == location.startLineNumber
+        && endLineNumber == location.endLineNumber;
+  }
 
-    public Location(URL url, int startLineNumber, int endLineNumber) {
-        this.url = url;
-        this.startLineNumber = startLineNumber;
-        this.endLineNumber = endLineNumber;
-    }
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, url, startLineNumber, endLineNumber);
+  }
 
-    public UUID getId() {
-        return this.id;
-    }
-
-    public URL getUrl() {
-        return this.url;
-    }
-
-    public void setUrl(URL url) {
-        this.url = url;
-    }
-
-    public int getStartLineNumber() {
-        return this.startLineNumber;
-    }
-
-    public void setStartLineNumber(int startLineNumber) {
-        this.startLineNumber = startLineNumber;
-    }
-
-    public int getEndLineNumber() {
-        return this.endLineNumber;
-    }
-
-    public void setEndLineNumber(int endLineNumber) {
-        this.endLineNumber = endLineNumber;
-    }
-
-    public Location url(URL url) {
-        setUrl(url);
-        return this;
-    }
-
-    public Location startLineNumber(int startLineNumber) {
-        setStartLineNumber(startLineNumber);
-        return this;
-    }
-
-    public Location endLineNumber(int endLineNumber) {
-        setEndLineNumber(endLineNumber);
-        return this;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == this)
-            return true;
-        if (!(o instanceof Location)) {
-            return false;
-        }
-        Location location = (Location) o;
-        return Objects.equals(id, location.id) && Objects.equals(url, location.url) && startLineNumber == location.startLineNumber && endLineNumber == location.endLineNumber;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, url, startLineNumber, endLineNumber);
-    }
-
-    @Override
-    public String toString() {
-        return "{" +
-            " id='" + getId() + "'" +
-            ", url='" + getUrl() + "'" +
-            ", startLineNumber='" + getStartLineNumber() + "'" +
-            ", endLineNumber='" + getEndLineNumber() + "'" +
-            "}";
-    }
-    
+  @Override
+  public String toString() {
+    return "{"
+        + " id='"
+        + getId()
+        + "'"
+        + ", url='"
+        + getUrl()
+        + "'"
+        + ", startLineNumber='"
+        + getStartLineNumber()
+        + "'"
+        + ", endLineNumber='"
+        + getEndLineNumber()
+        + "'"
+        + "}";
+  }
 }
