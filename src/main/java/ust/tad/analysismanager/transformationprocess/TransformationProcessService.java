@@ -64,7 +64,11 @@ public class TransformationProcessService {
 
     if (!technology.equals("layout-pipeline")) {
       modelsService.initializeTechnologySpecificDeploymentModel(
-          transformationProcessId, tsdm.getTechnology(), tsdm.getCommands(), location);
+          transformationProcessId,
+          tsdm.getTechnology(),
+          tsdm.getCommands(),
+          tsdm.getOptions(),
+          location);
       modelsService.initializeTechnologyAgnosticDeploymentModel(transformationProcessId);
     }
 

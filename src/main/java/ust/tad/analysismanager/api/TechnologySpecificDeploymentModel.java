@@ -15,8 +15,9 @@ public class TechnologySpecificDeploymentModel {
   /** A list of commands used for executing the technology-specific deployment model. */
   private List<String> commands;
 
-  /*
-   * A list of options used for influence the visualization of the technology-specific deployment model.
+  /**
+   * A list of options used for influence the visualization of the technology-specific deployment
+   * model.
    */
   private List<String> options;
 

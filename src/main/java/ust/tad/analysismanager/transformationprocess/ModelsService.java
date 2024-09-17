@@ -31,7 +31,11 @@ public class ModelsService {
    * @return the created technology-specififc deployment model as a JSON String.
    */
   public String initializeTechnologySpecificDeploymentModel(
-      UUID transformationProcessId, String technology, List<String> commands, Location location) {
+      UUID transformationProcessId,
+      String technology,
+      List<String> commands,
+      List<String> options,
+      Location location) {
     InitializeTechnologySpecificDeploymentModelRequest
         initializeTechnologySpecificDeploymentModelRequest =
             new InitializeTechnologySpecificDeploymentModelRequest();
@@ -39,6 +43,7 @@ public class ModelsService {
         transformationProcessId);
     initializeTechnologySpecificDeploymentModelRequest.setTechnology(technology);
     initializeTechnologySpecificDeploymentModelRequest.setCommands(commands);
+    initializeTechnologySpecificDeploymentModelRequest.setOptions(options);
     initializeTechnologySpecificDeploymentModelRequest.setLocations(List.of(location));
 
     return modelsServiceApiClient

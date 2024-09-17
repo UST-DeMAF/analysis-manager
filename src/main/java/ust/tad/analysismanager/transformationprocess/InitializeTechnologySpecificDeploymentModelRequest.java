@@ -13,6 +13,8 @@ public class InitializeTechnologySpecificDeploymentModelRequest {
 
   private List<String> commands;
 
+  private List<String> options;
+
   private List<Location> locations;
 
   public InitializeTechnologySpecificDeploymentModelRequest() {}
@@ -21,10 +23,12 @@ public class InitializeTechnologySpecificDeploymentModelRequest {
       UUID transformationProcessId,
       String technology,
       List<String> commands,
+      List<String> options,
       List<Location> locations) {
     this.transformationProcessId = transformationProcessId;
     this.technology = technology;
     this.commands = commands;
+    this.options = options;
     this.locations = locations;
   }
 
@@ -52,6 +56,14 @@ public class InitializeTechnologySpecificDeploymentModelRequest {
     this.commands = commands;
   }
 
+  public List<String> getOptions() {
+    return this.options;
+  }
+
+  public void setOptions(List<String> options) {
+    this.options = options;
+  }
+
   public List<Location> getLocations() {
     return this.locations;
   }
@@ -76,6 +88,11 @@ public class InitializeTechnologySpecificDeploymentModelRequest {
     return this;
   }
 
+  public InitializeTechnologySpecificDeploymentModelRequest options(List<String> options) {
+    setOptions(options);
+    return this;
+  }
+
   public InitializeTechnologySpecificDeploymentModelRequest locations(List<Location> locations) {
     setLocations(locations);
     return this;
@@ -95,12 +112,13 @@ public class InitializeTechnologySpecificDeploymentModelRequest {
             initializeTechnologySpecificDeploymentModelRequest.transformationProcessId)
         && Objects.equals(technology, initializeTechnologySpecificDeploymentModelRequest.technology)
         && Objects.equals(commands, initializeTechnologySpecificDeploymentModelRequest.commands)
+        && Objects.equals(options, initializeTechnologySpecificDeploymentModelRequest.options)
         && Objects.equals(locations, initializeTechnologySpecificDeploymentModelRequest.locations);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(transformationProcessId, technology, commands, locations);
+    return Objects.hash(transformationProcessId, technology, commands, options, locations);
   }
 
   @Override
@@ -114,6 +132,9 @@ public class InitializeTechnologySpecificDeploymentModelRequest {
         + "'"
         + ", commands='"
         + getCommands()
+        + "'"
+        + ", options='"
+        + getOptions()
         + "'"
         + ", locations='"
         + getLocations()
