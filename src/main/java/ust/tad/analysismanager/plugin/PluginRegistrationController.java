@@ -10,19 +10,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("plugin-registration")
 public class PluginRegistrationController {
 
-    @Autowired
-    PluginRegistrationService pluginRegistrationService;
+  @Autowired PluginRegistrationService pluginRegistrationService;
 
-    /**
-     * Registers a new plugin.
-     * 
-     * @param pluginRegistrationRequest
-     * @return a PluginRegistrationResponse containing the names of the request queue and the response exchange.
-     */
-    @PostMapping(consumes = "application/json", produces = "application/json")
-    public PluginRegistrationResponse registerPlugin(
-        @RequestBody PluginRegistrationRequest pluginRegistrationRequest) {  
-            return pluginRegistrationService.registerPlugin(pluginRegistrationRequest);     
-    }
-    
+  /**
+   * Registers a new plugin.
+   *
+   * @param pluginRegistrationRequest
+   * @return a PluginRegistrationResponse containing the names of the request queue and the response
+   *     exchange.
+   */
+  @PostMapping(consumes = "application/json", produces = "application/json")
+  public PluginRegistrationResponse registerPlugin(
+      @RequestBody PluginRegistrationRequest pluginRegistrationRequest) {
+    return pluginRegistrationService.registerPlugin(pluginRegistrationRequest);
+  }
 }

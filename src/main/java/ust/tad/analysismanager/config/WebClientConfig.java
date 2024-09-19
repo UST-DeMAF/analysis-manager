@@ -8,12 +8,11 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Configuration
 public class WebClientConfig {
 
-    @Value("${models-service.url}")
-    private String modelsServiceURL;
+  @Value("${models-service.url}")
+  private String modelsServiceURL;
 
-	@Bean
-	public WebClient modelsServiceApiClient() {
-		return WebClient.create(modelsServiceURL);
-	}
-    
+  @Bean
+  public WebClient modelsServiceApiClient() {
+    return WebClient.create(modelsServiceURL);
+  }
 }
