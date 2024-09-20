@@ -51,7 +51,7 @@ public class AnalysisTaskService {
       process.options = options;
       process.activeTasks++;
 
-      if (!technology.equals("layout-pipeline")) {
+      if (!technology.equals("visualization-service")) {
         process.visualize = true;
         for (String option : options) {
           if (option.contains("visualize=false")) {
@@ -130,7 +130,7 @@ public class AnalysisTaskService {
         AnalysisTask newVisualizationTask = new AnalysisTask();
 
         newVisualizationTask.setTransformationProcessId(process.transformationProcessId);
-        newVisualizationTask.setTechnology("layout-pipeline");
+        newVisualizationTask.setTechnology("visualization-service");
         newVisualizationTask.setCommands(null);
         newVisualizationTask.setOptions(process.options);
         newVisualizationTask.setLocations(null);

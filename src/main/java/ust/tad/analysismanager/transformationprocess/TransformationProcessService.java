@@ -62,7 +62,7 @@ public class TransformationProcessService {
     Location location = new Location();
     location.setUrl(tsdm.getLocationURL());
 
-    if (!technology.equals("layout-pipeline")) {
+    if (!technology.equals("visualization-service")) {
       modelsService.initializeTechnologySpecificDeploymentModel(
           transformationProcessId,
           tsdm.getTechnology(),
