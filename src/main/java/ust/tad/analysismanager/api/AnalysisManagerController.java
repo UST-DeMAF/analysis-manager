@@ -75,7 +75,7 @@ public class AnalysisManagerController {
 
     try {
       if (!analysisTaskService.areTasksWaitingOrRunning(transformationProcessId)) {
-        if (!tsdm.getTechnology().equals("layout-pipeline")) {
+        if (!tsdm.getTechnology().equals("visualization-service")) {
           result = modelsService.getResult(transformationProcessId);
           boolean visualize = true;
           for (String command : tsdm.getCommands()) {
