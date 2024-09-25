@@ -77,15 +77,7 @@ public class AnalysisManagerController {
       if (!analysisTaskService.areTasksWaitingOrRunning(transformationProcessId)) {
         if (!tsdm.getTechnology().equals("visualization-service")) {
           result = modelsService.getResult(transformationProcessId);
-          boolean visualize = true;
-          for (String command : tsdm.getCommands()) {
-            if (command.contains("visualize=false")) {
-              visualize = false;
-              break;
-            }
-          }
-
-          if (visualize) {
+          if (analysisTaskService.getProcess(transformationProcessId).visualize) {
             result.setPath(
                 "http://localhost/#/servicetemplates/ust.tad.servicetemplates/"
                     + transformationProcessId
@@ -106,6 +98,7 @@ public class AnalysisManagerController {
             result.setPath("-");
           }
         }
+        analysisTaskService.removeProcess(transformationProcessId);
 
         processStatusMessage.setIsFinished(true);
         processStatusMessage.setResult(result);
