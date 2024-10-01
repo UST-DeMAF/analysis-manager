@@ -11,7 +11,7 @@
 ```
 or (requires build):
 ```shell
-java -jar target/analysis-manager-0.0.1-SNAPSHOT.jar
+java -jar target/analysis-manager-0.2.0-SNAPSHOT.jar
 ```
 
 ## API

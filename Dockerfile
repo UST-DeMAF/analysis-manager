@@ -11,4 +11,4 @@ COPY src ./src
 
 RUN mvn clean package -DskipTests
 
-CMD java -jar target/analysis-manager-0.0.1-SNAPSHOT.jar
+CMD java -jar target/analysis-manager-0.2.0-SNAPSHOT.jar
