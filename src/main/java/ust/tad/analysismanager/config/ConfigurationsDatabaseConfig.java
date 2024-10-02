@@ -1,9 +1,7 @@
 package ust.tad.analysismanager.config;
 
 import java.util.HashMap;
-
 import javax.sql.DataSource;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
@@ -21,50 +19,42 @@ import org.springframework.transaction.PlatformTransactionManager;
 @Configuration
 @PropertySource({"classpath:application.properties"})
 @EnableJpaRepositories(
-  basePackages = "ust.tad.analysismanager.plugin",
-  entityManagerFactoryRef = "configurationsEntityManager",
-  transactionManagerRef = "configurationsTransactionManager")
+    basePackages = "ust.tad.analysismanager.plugin",
+    entityManagerFactoryRef = "configurationsEntityManager",
+    transactionManagerRef = "configurationsTransactionManager")
 public class ConfigurationsDatabaseConfig {
 
-    @Autowired
-    private Environment env;
-    
-    @Primary
-    @Bean
-    @ConfigurationProperties(prefix="spring.configurations-datasource")
-    public DataSource configurationsDataSource() {
-        return DataSourceBuilder.create().build();
-    }
+  @Autowired private Environment env;
 
-    @Bean
-    @Primary
-    public LocalContainerEntityManagerFactoryBean configurationsEntityManager() {
-        LocalContainerEntityManagerFactoryBean em
-          = new LocalContainerEntityManagerFactoryBean();
-        em.setDataSource(configurationsDataSource());
-        em.setPackagesToScan(
-          new String[] { "ust.tad.analysismanager.plugin" });
+  @Primary
+  @Bean
+  @ConfigurationProperties(prefix = "spring.configurations-datasource")
+  public DataSource configurationsDataSource() {
+    return DataSourceBuilder.create().build();
+  }
 
-        HibernateJpaVendorAdapter vendorAdapter
-          = new HibernateJpaVendorAdapter();
-        em.setJpaVendorAdapter(vendorAdapter);
-        HashMap<String, Object> properties = new HashMap<>();
-        properties.put("hibernate.hbm2ddl.auto",
-          env.getProperty("hibernate.hbm2ddl.auto"));
-        properties.put("hibernate.dialect",
-          env.getProperty("hibernate.dialect"));
-        em.setJpaPropertyMap(properties);
+  @Bean
+  @Primary
+  public LocalContainerEntityManagerFactoryBean configurationsEntityManager() {
+    LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
+    em.setDataSource(configurationsDataSource());
+    em.setPackagesToScan(new String[] {"ust.tad.analysismanager.plugin"});
 
-        return em;
-    }
+    HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+    em.setJpaVendorAdapter(vendorAdapter);
+    HashMap<String, Object> properties = new HashMap<>();
+    properties.put("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl.auto"));
+    properties.put("hibernate.dialect", env.getProperty("hibernate.dialect"));
+    em.setJpaPropertyMap(properties);
 
-    @Primary
-    @Bean
-    public PlatformTransactionManager configurationsTransactionManager() { 
-        JpaTransactionManager transactionManager
-          = new JpaTransactionManager();
-        transactionManager.setEntityManagerFactory(
-          configurationsEntityManager().getObject());
-        return transactionManager;
-    }
+    return em;
+  }
+
+  @Primary
+  @Bean
+  public PlatformTransactionManager configurationsTransactionManager() {
+    JpaTransactionManager transactionManager = new JpaTransactionManager();
+    transactionManager.setEntityManagerFactory(configurationsEntityManager().getObject());
+    return transactionManager;
+  }
 }
