@@ -31,7 +31,7 @@ jobs:
 
   delete-untagged-images:
     needs:
-      - build-using-dockerfile-push-2-ghcr
+      - build-with-paketo-push-2-ghcr
     runs-on: ubuntu-latest
     steps:
       - uses: actions/delete-package-versions@v5
