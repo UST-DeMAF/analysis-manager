@@ -1,10 +1,5 @@
 package ust.tad.analysismanager.analysistask;
 
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +8,12 @@ import ust.tad.analysismanager.analysistaskresponse.AnalysisTaskResponse;
 import ust.tad.analysismanager.analysistaskresponse.EmbeddedDeploymentModelAnalysisRequest;
 import ust.tad.analysismanager.plugin.PluginRepository;
 import ust.tad.analysismanager.shared.AnalysisType;
+
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 public class AnalysisTaskService {
@@ -24,6 +25,8 @@ public class AnalysisTaskService {
   @Autowired private AnalysisTaskRepository analysisTaskRepository;
 
   @Autowired private LocationService locationService;
+
+  @Autowired private TADMEntitiesService tadmEntitiesService;
 
   @Autowired private PluginRepository pluginRepository;
 
@@ -94,6 +97,8 @@ public class AnalysisTaskService {
     analysisTask.setCommands(request.getCommands());
     analysisTask.setOptions(request.getOptions());
     analysisTask.setLocations(savedLocations);
+    analysisTask.setTadmEntities(tadmEntitiesService.createAndSaveAllTADMEntities(
+            request.getTadmEntities()));
     analysisTask.setStatus(AnalysisStatus.WAITING);
     AnalysisTask newTask = analysisTaskRepository.save(analysisTask);
 
@@ -112,6 +117,7 @@ public class AnalysisTaskService {
     newAnalysisTask.setOptions(staticTask.getOptions());
     newAnalysisTask.setPluginId(pluginId);
     newAnalysisTask.setLocations(locations);
+    newAnalysisTask.setTadmEntities(staticTask.getTadmEntities());
     return analysisTaskRepository.save(newAnalysisTask);
   }
 
@@ -148,9 +154,7 @@ public class AnalysisTaskService {
 
       newVisualizationTask.setTransformationProcessId(process.transformationProcessId);
       newVisualizationTask.setTechnology("visualization-service");
-      newVisualizationTask.setCommands(null);
       newVisualizationTask.setOptions(process.options);
-      newVisualizationTask.setLocations(null);
       newVisualizationTask.setStatus(AnalysisStatus.WAITING);
 
       AnalysisTask visualizationTask = analysisTaskRepository.save(newVisualizationTask);

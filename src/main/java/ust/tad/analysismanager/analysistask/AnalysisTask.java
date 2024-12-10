@@ -1,18 +1,8 @@
 package ust.tad.analysismanager.analysistask;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import java.util.*;
+import javax.persistence.*;
+
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import ust.tad.analysismanager.shared.AnalysisType;
@@ -52,6 +42,10 @@ public class AnalysisTask {
   @Fetch(value = FetchMode.SUBSELECT)
   private List<AnalysisTask> subTasks = new ArrayList<>();
 
+  @OneToMany(fetch = FetchType.EAGER)
+  @Fetch(value = FetchMode.SUBSELECT)
+  private List<TADMEntities> tadmEntities = new ArrayList<>();
+
   public AnalysisTask() {}
 
   public AnalysisTask(
@@ -63,7 +57,8 @@ public class AnalysisTask {
       AnalysisStatus status,
       UUID pluginId,
       List<Location> locations,
-      List<AnalysisTask> subTasks) {
+      List<AnalysisTask> subTasks,
+      List<TADMEntities> tadmEntities) {
     this.transformationProcessId = transformationProcessId;
     this.technology = technology;
     this.analysisType = analysisType;
@@ -73,6 +68,7 @@ public class AnalysisTask {
     this.pluginId = pluginId;
     this.locations = locations;
     this.subTasks = subTasks;
+    this.tadmEntities = tadmEntities;
   }
 
   public UUID getTaskId() {
@@ -151,6 +147,14 @@ public class AnalysisTask {
     this.subTasks = subTasks;
   }
 
+  public List<TADMEntities> getTadmEntities() {
+    return tadmEntities;
+  }
+
+  public void setTadmEntities(List<TADMEntities> tadmEntities) {
+    this.tadmEntities = tadmEntities;
+  }
+
   public AnalysisTask transformationProcessId(UUID transformationProcessId) {
     setTransformationProcessId(transformationProcessId);
     return this;
@@ -196,6 +200,11 @@ public class AnalysisTask {
     return this;
   }
 
+  public AnalysisTask tadmEntities(List<TADMEntities> tadmEntities) {
+    setTadmEntities(tadmEntities);
+    return this;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (o == this) return true;
@@ -212,7 +221,8 @@ public class AnalysisTask {
         && Objects.equals(status, analysisTask.status)
         && Objects.equals(pluginId, analysisTask.pluginId)
         && Objects.equals(locations, analysisTask.locations)
-        && Objects.equals(subTasks, analysisTask.subTasks);
+        && Objects.equals(subTasks, analysisTask.subTasks)
+        && Objects.equals(tadmEntities, analysisTask.tadmEntities);
   }
 
   @Override
@@ -227,7 +237,8 @@ public class AnalysisTask {
         status,
         pluginId,
         locations,
-        subTasks);
+        subTasks,
+        tadmEntities);
   }
 
   @Override
@@ -262,6 +273,9 @@ public class AnalysisTask {
         + "'"
         + ", subTasks='"
         + getSubTasks()
+        + "'"
+        + ", tadmEntities='"
+        + getTadmEntities()
         + "'"
         + "}";
   }
