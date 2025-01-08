@@ -1,24 +1,34 @@
 package ust.tad.analysismanager.analysistask;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import ust.tad.analysismanager.analysistaskresponse.AnalysisTaskResponse;
+import ust.tad.analysismanager.analysistaskresponse.EmbeddedDeploymentModelAnalysisRequest;
+import ust.tad.analysismanager.plugin.PluginRepository;
+import ust.tad.analysismanager.shared.AnalysisType;
+
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import ust.tad.analysismanager.analysistaskresponse.AnalysisTaskResponse;
-import ust.tad.analysismanager.analysistaskresponse.EmbeddedDeploymentModelAnalysisRequest;
-import ust.tad.analysismanager.shared.AnalysisType;
 
 @Service
 public class AnalysisTaskService {
+
+  private static final Logger LOG = LoggerFactory.getLogger(AnalysisTaskService.class);
 
   private final HashMap<UUID, Process> processes = new HashMap<>();
 
   @Autowired private AnalysisTaskRepository analysisTaskRepository;
 
   @Autowired private LocationService locationService;
+
+  @Autowired private TADMEntitiesService tadmEntitiesService;
+
+  @Autowired private PluginRepository pluginRepository;
 
   public AnalysisTask createAnalysisTask(
       UUID transformationProcessId,
@@ -52,13 +62,21 @@ public class AnalysisTaskService {
       process.activeTasks++;
 
       if (!technology.equals("visualization-service")) {
-        process.visualize = true;
+        boolean visualize = true;
         for (String option : options) {
           if (option.contains("visualize=false")) {
-            process.visualize = false;
+            visualize = false;
             break;
           }
         }
+
+        if (visualize && pluginRepository.findByTechnology("visualization-service").isEmpty()) {
+          LOG.error(
+              "Visualization service is not registered, transformation continues without visualization.");
+          visualize = false;
+        }
+
+        process.visualize = visualize;
       }
 
       processes.put(transformationProcessId, process);
@@ -79,6 +97,8 @@ public class AnalysisTaskService {
     analysisTask.setCommands(request.getCommands());
     analysisTask.setOptions(request.getOptions());
     analysisTask.setLocations(savedLocations);
+    analysisTask.setTadmEntities(tadmEntitiesService.createAndSaveAllTADMEntities(
+            request.getTadmEntities()));
     analysisTask.setStatus(AnalysisStatus.WAITING);
     AnalysisTask newTask = analysisTaskRepository.save(analysisTask);
 
@@ -97,6 +117,7 @@ public class AnalysisTaskService {
     newAnalysisTask.setOptions(staticTask.getOptions());
     newAnalysisTask.setPluginId(pluginId);
     newAnalysisTask.setLocations(locations);
+    newAnalysisTask.setTadmEntities(staticTask.getTadmEntities());
     return analysisTaskRepository.save(newAnalysisTask);
   }
 
@@ -125,27 +146,20 @@ public class AnalysisTaskService {
     Process process = processes.get(task.getTransformationProcessId());
     process.activeTasks--;
 
-    if (process.visualize) {
-      if (process.activeTasks == 0 && process.visualizationTaskId == null && responseSuccess) {
-        AnalysisTask newVisualizationTask = new AnalysisTask();
+    if (process.visualize
+        && process.activeTasks == 0
+        && process.visualizationTaskId == null
+        && responseSuccess) {
+      AnalysisTask newVisualizationTask = new AnalysisTask();
 
-        newVisualizationTask.setTransformationProcessId(process.transformationProcessId);
-        newVisualizationTask.setTechnology("visualization-service");
-        newVisualizationTask.setCommands(null);
-        newVisualizationTask.setOptions(process.options);
-        newVisualizationTask.setLocations(null);
-        newVisualizationTask.setStatus(AnalysisStatus.WAITING);
+      newVisualizationTask.setTransformationProcessId(process.transformationProcessId);
+      newVisualizationTask.setTechnology("visualization-service");
+      newVisualizationTask.setOptions(process.options);
+      newVisualizationTask.setStatus(AnalysisStatus.WAITING);
 
-        AnalysisTask visualizationTask = analysisTaskRepository.save(newVisualizationTask);
-        addSubtask(process.mainTaskId, visualizationTask);
-        process.visualizationTaskId = visualizationTask.getTaskId();
-      } else if (process.activeTasks == 0 && responseTaskId.equals(process.visualizationTaskId)) {
-        processes.remove(process.transformationProcessId);
-      }
-    } else {
-      if (process.activeTasks == 0) {
-        processes.remove(process.transformationProcessId);
-      }
+      AnalysisTask visualizationTask = analysisTaskRepository.save(newVisualizationTask);
+      addSubtask(process.mainTaskId, visualizationTask);
+      process.visualizationTaskId = visualizationTask.getTaskId();
     }
     return analysisTaskRepository.save(task);
   }
@@ -200,12 +214,35 @@ public class AnalysisTaskService {
         .isEmpty();
   }
 
-  private static class Process {
-    UUID mainTaskId = null;
-    UUID transformationProcessId = null;
-    UUID visualizationTaskId = null;
-    boolean visualize = false;
-    int activeTasks = 0;
-    List<String> options;
+  /**
+   * Returns the analysis process with the given transformation process id.
+   *
+   * @param transformationProcessId
+   * @return the analysis process
+   */
+  public Process getProcess(UUID transformationProcessId) {
+    return processes.get(transformationProcessId);
+  }
+
+  /**
+   * Removes an analysis process from the list of analysis processes.
+   *
+   * @param transformationProcessId
+   */
+  public void removeProcess(UUID transformationProcessId) {
+    processes.remove(transformationProcessId);
+  }
+
+  /**
+   * A process that contains the main task id, the transformation process id, the visualization task
+   * id, a boolean indicating if the process should be visualized, and the number of active tasks.
+   */
+  public static class Process {
+    public UUID mainTaskId = null;
+    public UUID transformationProcessId = null;
+    public UUID visualizationTaskId = null;
+    public boolean visualize = false;
+    public int activeTasks = 0;
+    public List<String> options;
   }
 }
