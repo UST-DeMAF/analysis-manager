@@ -21,7 +21,7 @@ import ust.tad.analysismanager.transformationprocess.TransformationProcessServic
 
 @RestController
 @RequestMapping("demaf")
-@CrossOrigin(origins = "http://localhost:8079")
+
 public class AnalysisManagerController {
 
   TechnologySpecificDeploymentModel tsdm;
