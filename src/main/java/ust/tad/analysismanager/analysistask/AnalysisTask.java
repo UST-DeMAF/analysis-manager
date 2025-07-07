@@ -27,6 +27,7 @@ public class AnalysisTask {
 
   @ElementCollection(fetch = FetchType.EAGER)
   @Fetch(value = FetchMode.SUBSELECT)
+  @Column(length=10000)
   private List<String> options = new ArrayList<>();
 
   private AnalysisStatus status = AnalysisStatus.RUNNING;
