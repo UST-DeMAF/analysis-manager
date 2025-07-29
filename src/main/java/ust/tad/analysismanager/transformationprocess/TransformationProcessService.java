@@ -163,7 +163,7 @@ public class TransformationProcessService {
   }
 
   /**
-   * Send a AnalysisTaskStartRequest based on a given AnalysisTask. If an error occures, set the
+   * Send a AnalysisTaskStartRequest based on a given AnalysisTask. If an error occurs, set the
    * task to failed and look if other tasks wait for execution.
    *
    * @param analysisTask
